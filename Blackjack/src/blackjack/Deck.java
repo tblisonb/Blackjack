@@ -1,19 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package blackjack;
 
 import java.util.Random;
 
 /**
- *
- * @author Tanner Lisonbee
+ * @author Tanner Lisonbee, Dustin Howarth, David Boehmer, Richard Beck
  */
 public class Deck {
-private Card card[] = new Card[52];
-private int size = 52;
+    private Card card[] = new Card[52];
+    private int size = 52;
+
     public Deck() {
         int sum = 0;
         Card car[] = new Card[52];
@@ -38,45 +33,40 @@ private int size = 52;
         num[10] = Card.Number.JACK;
         num[11] = Card.Number.QUEEN;
         num[12] = Card.Number.KING;
+        
         for(int i =0; i < 4; i ++){
-        for(int j = 0; j < 13; j++){
-        test = new Card(suit[i],num[j]);
-        car[sum] = test;
-        sum++;
-      
-        }
+            for(int j = 0; j < 13; j++){
+                test = new Card(suit[i],num[j]);
+                car[sum] = test;
+                sum++;
+            }
         }
        
         shuffle(car);
         for(int i =0; i < size; i ++){
-     
-                  System.out.println(car[i].getNumber()+" of " + car[i].getSuit());
-        
+            System.out.println(car[i].getNumber()+" of " + car[i].getSuit());
         }
+    }
+    
+    
+    public void shuffle(Card card[]){
+        Random rand  = new Random();
+        Card car;
+        int index  = 0;
+        System.out.println(size);
+        for(int i = 0; i < size; i++){
+            System.out.println(i); 
+            index = rand.nextInt(size);
+            car = card[i];
+            card[i] = card[index];
+            card[index] = card[i];
         }
-    
-    
-public void shuffle(Card card[]){
-    Random rand  = new Random();
-    Card car;
-    int index  = 0;
-    System.out.println(size);
-for(int i = 0; i < size; i++){
-    System.out.println(i); 
-index = rand.nextInt(size);
-car = card[i];
-card[i] = card[index];
-card[index] = card[i];
-    
-}
+    }
 
-}
-
-public Card draw(){
-Card car;
-car = card[size];
-size--;
-return car;
-
-}
+    public Card draw(){
+        Card car;
+        car = card[size];
+        size--;
+        return car;
+    }
 }
