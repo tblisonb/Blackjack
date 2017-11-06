@@ -5,8 +5,17 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -20,10 +29,40 @@ public class Client extends Application implements Runnable, BlackjackConstants
     @Override
     public void start(Stage primaryStage)
     {
-        StackPane root = new StackPane();
+        GridPane root = new GridPane();
+        //set and configure background
         root.setStyle("-fx-background-image: url(" + BACKGROUND + "); \n" +
                       "-fx-background-position: center center; \n" +
-                      "-fx-background-repeat: stretch;");
+                      "-fx-background-repeat: stretch; \n" + 
+                      "-fx-background-size: 1280 720;");
+        
+        root.setPadding(new Insets(10, 10, 10, 10));
+        root.setVgap(8);
+        root.setHgap(10);
+        root.setAlignment(Pos.CENTER);
+        
+        root.getColumnConstraints().add(new ColumnConstraints(250));
+        root.getColumnConstraints().add(new ColumnConstraints(165));
+        root.getColumnConstraints().add(new ColumnConstraints(165));
+        root.getColumnConstraints().add(new ColumnConstraints(165));
+        root.getColumnConstraints().add(new ColumnConstraints(350));
+        root.getColumnConstraints().add(new ColumnConstraints(165));
+        
+        root.getRowConstraints().add(new RowConstraints(50));
+        root.getRowConstraints().add(new RowConstraints(650));
+        
+        Label betLabel = new Label("CURRENT BET: ");
+        betLabel.setFont(Font.font("Times New Roman", 32));
+        betLabel.setTextFill(Color.web("#FFD000"));
+        
+        Label creditsLabel = new Label("CREDITS AVAILABLE: ");
+        creditsLabel.setFont(Font.font("Times New Roman", 32));
+        creditsLabel.setTextFill(Color.web("#FFD000"));
+        
+        GridPane.setConstraints(betLabel, 0, 0);
+        GridPane.setConstraints(creditsLabel, 4, 0);
+        
+        root.getChildren().addAll(betLabel, creditsLabel);
         
         /*
         image.fitWidthProperty().bind(primaryStage.widthProperty());
@@ -34,10 +73,10 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         //StackPane root = new StackPane();
         //root.setId("pane");
-        Scene scene = new Scene(root, 1280, 720);
+        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         primaryStage.setTitle("Blackjack");
         primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(ALLOW_RESIZE);
         primaryStage.show();
         
         connectToServer();
