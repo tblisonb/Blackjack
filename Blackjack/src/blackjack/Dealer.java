@@ -14,9 +14,19 @@ public class Dealer
         this.hand1 = new ArrayList<>();
     }
     
-    public ArrayList<Card> getHand()
+    public ArrayList<Card> getFirstHand()
     {
-        return (ArrayList<Card>)hand1.clone();
+        return hand1;
+    }
+    
+    public void setFirstHand(ArrayList<Card> hand)
+    {
+        this.hand1 = hand;
+    }
+    
+    public void addCardFirstHand(Card card)
+    {
+        this.hand1.add(card);
     }
 }
 
@@ -34,5 +44,15 @@ class Player extends Dealer
     public ArrayList<Card> getSecondHand()
     {
         return (ArrayList<Card>)hand2.clone();
+    }
+    
+    public void setSecondHand(ArrayList<Card> hand)
+    {
+        this.hand2 = hand;
+    }
+    
+    public void addCardSecondHand(Card card)
+    {
+        
     }
 }
