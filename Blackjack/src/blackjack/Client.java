@@ -3,19 +3,16 @@ package blackjack;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.text.NumberFormat;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
  * @author Tanner Lisonbee
  */
-public class Client extends Application implements Runnable
+public class Client extends Application implements Runnable, BlackjackConstants
 {
     private DataInputStream fromServer;
     private DataOutputStream toServer;
@@ -23,18 +20,21 @@ public class Client extends Application implements Runnable
     @Override
     public void start(Stage primaryStage)
     {
-        BorderPane pane = new BorderPane();
-        ImageView image = new ImageView("images/Blackjack.jpg");
+        StackPane root = new StackPane();
+        root.setStyle("-fx-background-image: url(" + BACKGROUND + "); \n" +
+                      "-fx-background-position: center center; \n" +
+                      "-fx-background-repeat: stretch;");
         
+        /*
         image.fitWidthProperty().bind(primaryStage.widthProperty());
         image.fitHeightProperty().bind(primaryStage.heightProperty());
         pane.setCenter(image);
         pane.setId("pane");
+        */
         
         //StackPane root = new StackPane();
         //root.setId("pane");
-        Scene scene = new Scene(pane, 1280, 720);
-        scene.getStylesheets().add("images/style.css");
+        Scene scene = new Scene(root, 1280, 720);
         primaryStage.setTitle("Blackjack");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
