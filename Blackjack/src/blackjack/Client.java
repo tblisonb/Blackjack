@@ -126,6 +126,9 @@ public class Client extends Application implements Runnable, BlackjackConstants
         player4Field.setEditable(false);
         player4Field.setPrefWidth(96);
         
+        grid.setMouseTransparent(true);
+        fieldPane.setMouseTransparent(true);
+        
         buttonPane.getChildren().addAll(btnStay, btnHit);
         grid.getChildren().addAll(betLabel, creditsLabel, betField, creditsField);
         fieldPane.getChildren().addAll(player1Field, player2Field, player3Field, player4Field);
