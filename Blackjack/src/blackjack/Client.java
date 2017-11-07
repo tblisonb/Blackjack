@@ -3,10 +3,13 @@ package blackjack;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.util.Enumeration;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -145,20 +148,34 @@ public class Client extends Application implements Runnable, BlackjackConstants
     
     private void connectToServer()
     {
-        try
+        //new socket on port 8000, looking on local network for server
+        new Thread(() ->
         {
-            //new socket on port 8000, looking on local network for server
-            Socket socket = new Socket("localhost", 8000);
-            fromServer = new DataInputStream(socket.getInputStream());
-            toServer = new DataOutputStream(socket.getOutputStream());
-        }
-        catch (IOException e)
-        {
-            System.err.println(e);
-        }
+            try
+            {
+                Socket socket = null;
+                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                while(interfaces.hasMoreElements())
+                {
+                    Enumeration<InetAddress> addresses = interfaces.nextElement().getInetAddresses();
+                    if (addresses.hasMoreElements())
+                    {
+                        socket = new Socket(addresses.nextElement(), 8000);
+                    }
+                    if (socket != null)
+                        break;
+                } 
+                fromServer = new DataInputStream(socket.getInputStream());
+                toServer = new DataOutputStream(socket.getOutputStream());
+            }
+            catch (IOException e)
+            {
+                System.err.println(e);
+            }
+        }).start();
         
         //new thread for connecting to server
-        new Thread(this).start();
+        //new Thread(this).start();
     }
     
     @Override
