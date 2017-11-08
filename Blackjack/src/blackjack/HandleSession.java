@@ -31,10 +31,9 @@ public class HandleSession implements Runnable, BlackjackConstants
      * @param sessionNum numerical id for client
      * @param log reference to the server log
      */
-    public HandleSession(Player[] sockets, int sessionNum, TextArea log)
+    public HandleSession(Player[] players, int sessionNum, TextArea log)
     {
-        for (int i = 0; i < MAX_PLAYER_COUNT; i++)
-            this.players[i].setSocket(sockets[i].getSocket());
+        this.players = players;
         this.sessionNum = sessionNum;
         this.log = log;
     }

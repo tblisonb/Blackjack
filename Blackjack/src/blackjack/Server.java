@@ -68,7 +68,8 @@ public class Server extends Application implements BlackjackConstants
                                 (i + 1) + " to join session #" + sessionNum + 
                                 "\n");
                             
-                            players[i].setSocket(serverSocket.accept());
+                            Socket socket = serverSocket.accept();
+                            players[i] = new Player(socket);
                             try
                             {
                                 DataInputStream reader = new DataInputStream(players[i].getSocket().getInputStream());
