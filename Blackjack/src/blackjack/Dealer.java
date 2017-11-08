@@ -1,5 +1,10 @@
 package blackjack;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -37,8 +42,9 @@ class Player extends Dealer
     private Socket socket;
     private int credits;
     
-    public Player()
+    public Player(Socket socket)
     {
+        this.socket = socket;
         this.hand2 = new ArrayList<>();
         credits = 500;
     }
@@ -55,7 +61,7 @@ class Player extends Dealer
     
     public void addCardSecondHand(Card card)
     {
-        
+        hand2.add(card);
     }
     
     public Socket getSocket()
@@ -63,8 +69,13 @@ class Player extends Dealer
         return socket;
     }
     
-    public void setSocket(Socket socket)
+    public int getCredits()
     {
-        this.socket = socket;
+        return credits;
+    }
+    
+    public void addCredits(int credits)
+    {
+        this.credits += credits;
     }
 }
