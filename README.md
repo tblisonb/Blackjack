@@ -1,2 +1,2 @@
 # Blackjack
-Only the best
+The game.
