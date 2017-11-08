@@ -20,11 +20,22 @@ public class Card
     
     private Suit suit;
     private Number number;
+    private int unicode;
     
     public Card(Suit suit, Number number)
     {
         this.suit = suit;
         this.number = number;
+        if (suit.equals(Suit.SPADES)){
+            unicode = 0x1F0A0;
+        } else if (suit.equals(Suit.HEARTS)){
+            unicode = 0x1F0B0;
+        } else if (suit.equals(Suit.DIAMONDS)){
+            unicode = 0x1F0C0;
+        } else {
+            unicode = 0x1F0D0;
+        }
+        unicode += number.value;
     }
 
     public Suit getSuit() 
