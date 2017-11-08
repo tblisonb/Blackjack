@@ -1,5 +1,6 @@
 package blackjack;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 /**
@@ -33,6 +34,7 @@ public class Dealer
 class Player extends Dealer
 {
     private ArrayList<Card> hand2;
+    private Socket socket;
     private int credits;
     
     public Player()
@@ -54,5 +56,15 @@ class Player extends Dealer
     public void addCardSecondHand(Card card)
     {
         
+    }
+    
+    public Socket getSocket()
+    {
+        return socket;
+    }
+    
+    public void setSocket(Socket socket)
+    {
+        this.socket = socket;
     }
 }

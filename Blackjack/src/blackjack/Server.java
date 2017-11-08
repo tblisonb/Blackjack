@@ -26,7 +26,7 @@ import javafx.stage.WindowEvent;
  */
 public class Server extends Application implements BlackjackConstants
 {
-    private Socket[] players = new Socket[MAX_PLAYER_COUNT];
+    private Player[] players = new Player[MAX_PLAYER_COUNT];
     
     @Override
     public void start(Stage primaryStage) 
@@ -68,10 +68,10 @@ public class Server extends Application implements BlackjackConstants
                                 (i + 1) + " to join session #" + sessionNum + 
                                 "\n");
                             
-                            players[i] = serverSocket.accept();
+                            players[i].setSocket(serverSocket.accept());
                             try
                             {
-                                DataInputStream reader = new DataInputStream(players[i].getInputStream());
+                                DataInputStream reader = new DataInputStream(players[i].getSocket().getInputStream());
                                 String name = reader.readUTF();
                                 if (name == null || name.isEmpty())
                                     name = "Anonymous_" + i;

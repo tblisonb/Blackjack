@@ -19,7 +19,7 @@ import javafx.scene.control.TextArea;
  */
 public class HandleSession implements Runnable, BlackjackConstants
 {
-    private Socket[] players;
+    private Player[] players;
     private final int sessionNum;
     private TextArea log;
     
@@ -31,10 +31,10 @@ public class HandleSession implements Runnable, BlackjackConstants
      * @param sessionNum numerical id for client
      * @param log reference to the server log
      */
-    public HandleSession(Socket[] sockets, int sessionNum, TextArea log)
+    public HandleSession(Player[] sockets, int sessionNum, TextArea log)
     {
         for (int i = 0; i < MAX_PLAYER_COUNT; i++)
-            this.players[i] = sockets[i];
+            this.players[i].setSocket(sockets[i].getSocket());
         this.sessionNum = sessionNum;
         this.log = log;
     }
@@ -46,8 +46,8 @@ public class HandleSession implements Runnable, BlackjackConstants
         {
             for (int i = 0; i < MAX_PLAYER_COUNT; i++)
             {
-                fromClient[i] = new DataInputStream(players[i].getInputStream());
-                toClient[i] = new DataOutputStream(players[i].getOutputStream());
+                fromClient[i] = new DataInputStream(players[i].getSocket().getInputStream());
+                toClient[i] = new DataOutputStream(players[i].getSocket().getOutputStream());
             }
             
             while (true) //runs indefinitely
