@@ -4,12 +4,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
-import java.util.Enumeration;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -34,6 +32,82 @@ public class Client extends Application implements Runnable, BlackjackConstants
     
     @Override
     public void start(Stage primaryStage)
+    {
+        StackPane root = new StackPane();
+        GridPane grid = new GridPane();
+        Pane pane = new Pane();
+        pane.setMouseTransparent(true);
+
+        grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setVgap(8);
+
+        Label gameLabel = new Label("BLACKJACK");
+        gameLabel.setFont(Font.font("Times New Roman", 36));
+        gameLabel.setPadding(new Insets(10 ,0, 0, 50));
+
+        grid.getRowConstraints().add(new RowConstraints(50));
+        grid.getColumnConstraints().add(new ColumnConstraints(70));
+        grid.getColumnConstraints().add(new ColumnConstraints(210));
+
+        Label ipLabel = new Label("IP Address: ");
+        TextField ipInput = new TextField();
+        GridPane.setConstraints(ipLabel, 0, 1);
+        GridPane.setConstraints(ipInput, 1, 1);
+
+        Label userNameLabel = new Label("Username: ");
+        TextField userNameInput = new TextField();
+        GridPane.setConstraints(userNameLabel, 0, 2);
+        GridPane.setConstraints(userNameInput, 1, 2);
+
+        Button btn = new Button("Enter Game");
+        GridPane.setConstraints(btn, 1, 6);
+        
+        Label errorMessage = new Label("Welcome.");
+        GridPane.setConstraints(errorMessage, 1, 7);
+
+        grid.getChildren().addAll(ipLabel, ipInput,
+                                  userNameLabel, userNameInput,
+                                  btn,
+                                  errorMessage);
+        pane.getChildren().add(gameLabel);
+        root.getChildren().addAll(grid, pane);
+
+        Scene scene = new Scene(root, 300, 200);
+        primaryStage.setTitle("Blackjack");
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(ALLOW_RESIZE);
+        primaryStage.show();
+
+        btn.setOnAction((ActionEvent event) ->
+        {
+            boolean isConnected = connectToServer(ipInput.getText());
+            if (isConnected == false)
+                errorMessage.setText("Failed to connect to host...");
+            else
+                synchronized(this)
+                {
+                    notify();
+                    buildGUI(primaryStage);
+                }
+        });
+
+        synchronized(this)
+        {
+            new Thread(() -> 
+            {
+                try
+                {
+                    wait();
+                }
+                catch(InterruptedException e)
+                {
+                    System.err.println(e);
+                }
+            });
+        }
+    }
+    
+    public void buildGUI(Stage primaryStage)
     {
         StackPane root = new StackPane();
         GridPane grid = new GridPane();
@@ -142,40 +216,28 @@ public class Client extends Application implements Runnable, BlackjackConstants
         primaryStage.setScene(scene);
         primaryStage.setResizable(ALLOW_RESIZE);
         primaryStage.show();
-        
-        connectToServer();
     }
     
-    private void connectToServer()
+    private boolean connectToServer(String ip)
     {
-        //new socket on port 8000, looking on local network for server
-        new Thread(() ->
+        Socket socket = null;
+        try
         {
-            try
-            {
-                Socket socket = null;
-                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-                while(interfaces.hasMoreElements())
-                {
-                    Enumeration<InetAddress> addresses = interfaces.nextElement().getInetAddresses();
-                    if (addresses.hasMoreElements())
-                    {
-                        socket = new Socket(addresses.nextElement(), 8000);
-                    }
-                    if (socket != null)
-                        break;
-                } 
-                fromServer = new DataInputStream(socket.getInputStream());
-                toServer = new DataOutputStream(socket.getOutputStream());
-            }
-            catch (IOException e)
-            {
-                System.err.println(e);
-            }
-        }).start();
+            //new socket on port 8000, looking on local network for server
+            socket = new Socket(ip, 8000);
+            fromServer = new DataInputStream(socket.getInputStream());
+            toServer = new DataOutputStream(socket.getOutputStream());
+        }
+        catch (IOException e)
+        {
+            System.err.println(e);
+        }
         
         //new thread for connecting to server
         //new Thread(this).start();
+        if (socket == null)
+            return false;
+        return socket.isConnected();
     }
     
     @Override
