@@ -11,6 +11,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -30,7 +31,6 @@ import javafx.stage.WindowEvent;
 public class Server extends Application implements BlackjackConstants {
 
     private Player[] players = new Player[MAX_PLAYER_COUNT];
-    Deck deck = new Deck();
 
     @Override
     public void start(Stage primaryStage) {
@@ -96,12 +96,60 @@ public class Server extends Application implements BlackjackConstants {
         }
     }
 
-    public void hit(int playerid) {
-        players[playerid].addCardFirstHand(deck.draw());
-        if(getValue(players[playerid].getFirstHand()) > 21){
-        
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+
+/**
+ *
+ * @author Tanner Lisonbee
+ */
+class HandleSession implements Runnable, BlackjackConstants {
+
+    private Player[] players;
+    private final int sessionNum;
+    private TextArea log;
+
+    private DataInputStream[] fromClient;
+    private DataOutputStream[] toClient;
+    private Deck deck = new Deck();
+
+    /**
+     * @param socket client socket
+     * @param sessionNum numerical id for client
+     * @param log reference to the server log
+     */
+    public HandleSession(Player[] players, int sessionNum, TextArea log) {
+
+        this.players = players;
+        this.sessionNum = sessionNum;
+        this.log = log;
+    }
+
+    @Override
+    public void run() {
+        try {
+            for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+                fromClient[i] = new DataInputStream(players[i].getSocket().getInputStream());
+                toClient[i] = new DataOutputStream(players[i].getSocket().getOutputStream());
+            }
+
+            while (true) //runs indefinitely
+            {
+                //To-do ~ Implement data passing on server-side
+            }
+        } catch (Exception e) {
+            System.err.println(e);
         }
-            
+    }
+
+    public void hit(int playerid) throws IOException {
+        OutputStream output;
+        players[playerid].addCardFirstHand(deck.draw());
+        if (getValue(players[playerid].getFirstHand()) > 21) {
+
+        }
 
     }
 
@@ -112,57 +160,5 @@ public class Server extends Application implements BlackjackConstants {
 
         }
         return sum;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-}
-
-/**
- *
- * @author Tanner Lisonbee
- */
-class HandleSession implements Runnable, BlackjackConstants
-{
-    private Player[] players;
-    private final int sessionNum;
-    private TextArea log;
-    
-    private DataInputStream[] fromClient;
-    private DataOutputStream[] toClient;
-    
-    /**
-     * @param socket client socket
-     * @param sessionNum numerical id for client
-     * @param log reference to the server log
-     */
-    public HandleSession(Player[] players, int sessionNum, TextArea log)
-    {
-        this.players = players;
-        this.sessionNum = sessionNum;
-        this.log = log;
-    }
-    
-    @Override
-    public void run() 
-    {
-        try
-        {
-            for (int i = 0; i < MAX_PLAYER_COUNT; i++)
-            {
-                fromClient[i] = new DataInputStream(players[i].getSocket().getInputStream());
-                toClient[i] = new DataOutputStream(players[i].getSocket().getOutputStream());
-            }
-            
-            while (true) //runs indefinitely
-            {
-                //To-do ~ Implement data passing on server-side
-            }
-        }
-        catch (Exception e)
-        {
-            System.err.println(e);
-        }
     }
 }
