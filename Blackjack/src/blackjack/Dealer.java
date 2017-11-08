@@ -39,7 +39,7 @@ public class Dealer
 class Player extends Dealer
 {
     private ArrayList<Card> hand2;
-    private final Socket socket;
+    private Socket socket;
     private int credits;
     
     public Player(Socket socket)
