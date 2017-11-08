@@ -5,7 +5,10 @@
  */
 package blackjack;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
@@ -66,10 +69,20 @@ public class Server extends Application implements BlackjackConstants
                                 "\n");
                             
                             players[i] = serverSocket.accept();
-                            log.appendText(new Date() + ": Player " + (i + 1) + 
-                                " has joined session #" + sessionNum + "\n");
+                            try
+                            {
+                                DataInputStream reader = new DataInputStream(players[i].getInputStream());
+                                String name = reader.readUTF();
+                                if (name == null || name.isEmpty())
+                                    name = "Anonymous_" + i;
+                                log.appendText(new Date() + ": Player '" + name + 
+                                    "' has joined session #" + sessionNum + "\n");
+                            }
+                            catch (IOException e)
+                            {
+                                System.err.println(e);
+                            }
                         }
-                        
                         log.appendText(new Date() + ": Starting a thread for " + 
                                 "session #" + sessionNum + "\n");
 
