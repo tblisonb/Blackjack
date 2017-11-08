@@ -3,16 +3,18 @@ package blackjack;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.Socket;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -30,6 +32,9 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private DataInputStream fromServer;
     private DataOutputStream toServer;
     
+    private String name;
+    private String ip;
+    
     @Override
     public void start(Stage primaryStage)
     {
@@ -41,6 +46,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setVgap(8);
 
+        //Label for title
         Label gameLabel = new Label("BLACKJACK");
         gameLabel.setFont(Font.font("Times New Roman", 36));
         gameLabel.setPadding(new Insets(10 ,0, 0, 50));
@@ -49,24 +55,28 @@ public class Client extends Application implements Runnable, BlackjackConstants
         grid.getColumnConstraints().add(new ColumnConstraints(70));
         grid.getColumnConstraints().add(new ColumnConstraints(210));
 
+        //IP Address
         Label ipLabel = new Label("IP Address: ");
         TextField ipInput = new TextField();
         GridPane.setConstraints(ipLabel, 0, 1);
         GridPane.setConstraints(ipInput, 1, 1);
 
-        Label userNameLabel = new Label("Username: ");
-        TextField userNameInput = new TextField();
-        GridPane.setConstraints(userNameLabel, 0, 2);
-        GridPane.setConstraints(userNameInput, 1, 2);
+        //Username
+        Label usernameLabel = new Label("Username: ");
+        TextField usernameInput = new TextField();
+        GridPane.setConstraints(usernameLabel, 0, 2);
+        GridPane.setConstraints(usernameInput, 1, 2);
 
+        //Login button
         Button btn = new Button("Enter Game");
         GridPane.setConstraints(btn, 1, 6);
         
+        //Error message label 
         Label errorMessage = new Label("Welcome.");
         GridPane.setConstraints(errorMessage, 1, 7);
 
         grid.getChildren().addAll(ipLabel, ipInput,
-                                  userNameLabel, userNameInput,
+                                  usernameLabel, usernameInput,
                                   btn,
                                   errorMessage);
         pane.getChildren().add(gameLabel);
@@ -80,31 +90,33 @@ public class Client extends Application implements Runnable, BlackjackConstants
 
         btn.setOnAction((ActionEvent event) ->
         {
+            //------------------------------------------------------------------
+            //REMOVE FROM FINAL GAME
+            if (ipInput.getText().equalsIgnoreCase("debug"))
+            {
+                buildGUI(primaryStage);
+            }
+            //------------------------------------------------------------------
             boolean isConnected = connectToServer(ipInput.getText());
             if (isConnected == false)
                 errorMessage.setText("Failed to connect to host...");
             else
-                synchronized(this)
-                {
-                    notify();
-                    buildGUI(primaryStage);
-                }
-        });
-
-        synchronized(this)
-        {
-            new Thread(() -> 
             {
-                try
-                {
-                    wait();
-                }
-                catch(InterruptedException e)
-                {
-                    System.err.println(e);
-                }
-            });
-        }
+                name = usernameInput.getText();
+                ip = ipInput.getText();
+                buildGUI(primaryStage);
+            }
+        });
+        
+        usernameInput.setOnKeyPressed((KeyEvent event) -> {
+            if (event.getCode().equals(KeyCode.ENTER))
+                btn.fire();
+        });
+        
+        ipInput.setOnKeyPressed((KeyEvent event) -> {
+            if (event.getCode().equals(KeyCode.ENTER))
+                btn.fire();
+        });
     }
     
     public void buildGUI(Stage primaryStage)
@@ -157,8 +169,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         //stay button
         Button btnStay = new Button("STAY");
-        btnStay.setLayoutX(440);
-        btnStay.setLayoutY(472);
+        btnStay.setLayoutX(434);
+        btnStay.setLayoutY(467);
         btnStay.setFont(Font.font("Times New Roman", 16));
         btnStay.setOnAction((ActionEvent event) -> 
         {
@@ -167,8 +179,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         //hit button
         Button btnHit = new Button("HIT");
-        btnHit.setLayoutX(792);
-        btnHit.setLayoutY(472);
+        btnHit.setLayoutX(789);
+        btnHit.setLayoutY(467);
         btnHit.setFont(Font.font("Times New Roman", 16));
         btnHit.setOnAction((ActionEvent event) -> 
         {
@@ -177,29 +189,29 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         //player 1
         TextField player1Field = new TextField();
-        player1Field.setLayoutX(162);
-        player1Field.setLayoutY(555);
+        player1Field.setLayoutX(157);
+        player1Field.setLayoutY(550);
         player1Field.setEditable(false);
         player1Field.setPrefWidth(96);
         
         //player 2
         TextField player2Field = new TextField();
-        player2Field.setLayoutX(282);
-        player2Field.setLayoutY(555);
+        player2Field.setLayoutX(276);
+        player2Field.setLayoutY(550);
         player2Field.setEditable(false);
         player2Field.setPrefWidth(96);
         
         //player 3
         TextField player3Field = new TextField();
-        player3Field.setLayoutX(914);
-        player3Field.setLayoutY(555);
+        player3Field.setLayoutX(908);
+        player3Field.setLayoutY(550);
         player3Field.setEditable(false);
         player3Field.setPrefWidth(96);
         
         //player 4
         TextField player4Field = new TextField();
-        player4Field.setLayoutX(1032);
-        player4Field.setLayoutY(555);
+        player4Field.setLayoutX(1026);
+        player4Field.setLayoutY(550);
         player4Field.setEditable(false);
         player4Field.setPrefWidth(96);
         
@@ -216,6 +228,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
         primaryStage.setScene(scene);
         primaryStage.setResizable(ALLOW_RESIZE);
         primaryStage.show();
+        
+        run();
     }
     
     private boolean connectToServer(String ip)
@@ -245,7 +259,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     {
         try
         {
-            //To-do ~ implement data passing on client side
+            toServer.writeUTF(name);
         }
         catch (Exception e)
         {
