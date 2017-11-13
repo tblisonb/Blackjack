@@ -20,29 +20,22 @@ public class Card
     
     private Suit suit;
     private Number number;
-    private String unicode;
+    private int unicode;
     
     public Card(Suit suit, Number number)
     {
         this.suit = suit;
         this.number = number;
-        char unicodeRep;
-        switch (suit) {
-            case SPADES:
-                unicodeRep = '\uDCA0';
-                break;
-            case HEARTS:
-                unicodeRep = '\uDCB0';
-                break;
-            case DIAMONDS:
-                unicodeRep = '\uDCC0';
-                break;
-            default:
-                unicodeRep = '\uDCD0';
-                break;
+        if (suit.equals(Suit.SPADES)){
+            unicode = 0x1F0A0;
+        } else if (suit.equals(Suit.HEARTS)){
+            unicode = 0x1F0B0;
+        } else if (suit.equals(Suit.DIAMONDS)){
+            unicode = 0x1F0C0;
+        } else {
+            unicode = 0x1F0D0;
         }
-        unicodeRep += number.value;
-        String unicode = "\uD83C" + unicodeRep;
+        unicode += number.value;
     }
 
     public Suit getSuit() 
