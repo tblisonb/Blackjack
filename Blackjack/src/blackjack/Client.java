@@ -1,12 +1,13 @@
 package blackjack;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,15 +24,17 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * @author Tanner Lisonbee
  */
 public class Client extends Application implements Runnable, BlackjackConstants
 {
-    private DataInputStream fromServer;
-    private DataOutputStream toServer;
-    
+    private ObjectInputStream fromServer;
+    private ObjectOutputStream toServer;
+    private TextField player1Field, player2Field, player3Field, player4Field,
+                      creditsField, betField;
     private String name;
     private String ip;
     
@@ -88,6 +91,13 @@ public class Client extends Application implements Runnable, BlackjackConstants
         primaryStage.setResizable(ALLOW_RESIZE);
         primaryStage.show();
 
+        //ensure client terminates when the window is closed
+        primaryStage.setOnCloseRequest((WindowEvent event) -> 
+        {
+            Platform.exit();
+            System.exit(0);
+        });
+        
         btn.setOnAction((ActionEvent event) ->
         {
             //------------------------------------------------------------------
@@ -152,8 +162,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
         GridPane.setConstraints(betLabel, 0, 0);
         
         //current bet field
-        TextField betField = new TextField();
+        betField = new TextField();
         betField.setEditable(false);
+        betField.setFont(Font.font("Times New Roman", 24));
+        //betField.setPrefHeight(34);
+        //betField.setPrefWidth(80);
         GridPane.setConstraints(betField, 1, 0);
         
         //credits available label
@@ -163,8 +176,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
         GridPane.setConstraints(creditsLabel, 4, 0);
         
         //credits available field
-        TextField creditsField = new TextField();
+        creditsField = new TextField();
         creditsField.setEditable(false);
+        creditsField.setFont(Font.font("Times New Roman", 24));
+        //creditsField.setPrefHeight(34);
+        //creditsField.setPrefWidth(80);
         GridPane.setConstraints(creditsField, 5, 0);
         
         //stay button
@@ -188,32 +204,36 @@ public class Client extends Application implements Runnable, BlackjackConstants
         });
         
         //player 1
-        TextField player1Field = new TextField();
+        player1Field = new TextField();
         player1Field.setLayoutX(157);
         player1Field.setLayoutY(550);
         player1Field.setEditable(false);
         player1Field.setPrefWidth(96);
+        player1Field.setFont(Font.font("Times New Roman"));
         
         //player 2
-        TextField player2Field = new TextField();
+        player2Field = new TextField();
         player2Field.setLayoutX(276);
         player2Field.setLayoutY(550);
         player2Field.setEditable(false);
         player2Field.setPrefWidth(96);
+        player2Field.setFont(Font.font("Times New Roman"));
         
         //player 3
-        TextField player3Field = new TextField();
+        player3Field = new TextField();
         player3Field.setLayoutX(908);
         player3Field.setLayoutY(550);
         player3Field.setEditable(false);
         player3Field.setPrefWidth(96);
+        player3Field.setFont(Font.font("Times New Roman"));
         
         //player 4
-        TextField player4Field = new TextField();
+        player4Field = new TextField();
         player4Field.setLayoutX(1026);
         player4Field.setLayoutY(550);
         player4Field.setEditable(false);
         player4Field.setPrefWidth(96);
+        player4Field.setFont(Font.font("Times New Roman"));
         
         grid.setMouseTransparent(true);
         fieldPane.setMouseTransparent(true);
@@ -239,8 +259,9 @@ public class Client extends Application implements Runnable, BlackjackConstants
         {
             //new socket on port 8000, looking on local network for server
             socket = new Socket(ip, 8000);
-            fromServer = new DataInputStream(socket.getInputStream());
-            toServer = new DataOutputStream(socket.getOutputStream());
+            toServer = new ObjectOutputStream(socket.getOutputStream());
+            toServer.flush();
+            fromServer = new ObjectInputStream(socket.getInputStream());
         }
         catch (IOException e)
         {
@@ -257,14 +278,40 @@ public class Client extends Application implements Runnable, BlackjackConstants
     @Override
     public void run() 
     {
-        try
+        new Thread(() ->
         {
-            toServer.writeUTF(name);
-        }
-        catch (Exception e)
-        {
-            System.err.println(e);
-        }
+            try
+            {
+                toServer.writeUTF(name);
+                toServer.flush();
+
+                while (true)
+                {
+                    Object object = fromServer.readObject();
+                    try
+                    {
+                        List<String> temp = (List<String>)object;
+                        player1Field.setText(temp.remove(0));
+                        player2Field.setText(temp.remove(0));
+                        player3Field.setText(temp.remove(0));
+                        player4Field.setText(temp.remove(0));
+                    }
+                    catch (ClassCastException e)
+                    {
+                        creditsField.setText(((Player)object).getCredits() + "");
+                    }
+                    catch (Exception e)
+                    {
+                        System.err.println("Unknown Exception");
+                    }
+                }
+            }
+            catch (IOException | ClassNotFoundException e)
+            {
+                System.err.println(e);
+            }
+            catch (IndexOutOfBoundsException e) {}
+        }).start();
     }
     
     public static void main(String[] args)

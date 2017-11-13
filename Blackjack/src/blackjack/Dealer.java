@@ -1,11 +1,6 @@
 package blackjack;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -36,15 +31,19 @@ public class Dealer
     }
 }
 
-class Player extends Dealer
+class Player extends Dealer implements Serializable
 {
-    private ArrayList<Card> hand2;
-    private final Socket socket;
-    private int credits;
+    public enum State 
+    { 
+        HIT, STAY;
+    }
     
-    public Player(Socket socket)
+    private ArrayList<Card> hand2;
+    private int credits;
+    private State state;
+    
+    public Player()
     {
-        this.socket = socket;
         this.hand2 = new ArrayList<>();
         credits = 500;
     }
@@ -64,11 +63,6 @@ class Player extends Dealer
         hand2.add(card);
     }
     
-    public Socket getSocket()
-    {
-        return socket;
-    }
-    
     public int getCredits()
     {
         return credits;
@@ -77,5 +71,10 @@ class Player extends Dealer
     public void addCredits(int credits)
     {
         this.credits += credits;
+    }
+    
+    public void setState(State state)
+    {
+        this.state = state;
     }
 }

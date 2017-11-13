@@ -6,16 +6,15 @@
 package blackjack;
 
 import static blackjack.BlackjackConstants.MAX_PLAYER_COUNT;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -30,8 +29,6 @@ import javafx.stage.WindowEvent;
  */
 public class Server extends Application implements BlackjackConstants
 {
-    private Player[] players = new Player[MAX_PLAYER_COUNT];
-
     @Override
     public void start(Stage primaryStage)
     {
@@ -64,7 +61,10 @@ public class Server extends Application implements BlackjackConstants
                 int sessionNum = 1; //keeps track of what client is connected
                 while (true) //runs indefinitely
                 {
-                    players = new Player[MAX_PLAYER_COUNT];
+                    List<Player> players = new LinkedList<>();
+                    List<String> names = new LinkedList<>();
+                    List<ObjectInputStream> fromClient = new LinkedList<>();
+                    List<ObjectOutputStream> toClient = new LinkedList<>();
                     try
                     {
                         //poll for new client connection
@@ -75,16 +75,19 @@ public class Server extends Application implements BlackjackConstants
                                     + "\n");
 
                             Socket socket = serverSocket.accept();
-                            players[i] = new Player(socket);
+                            players.add(i, new Player());
                             try
                             {
-                                
-                                String name = new ObjectInputStream(players[i].getSocket().getInputStream()).readUTF();
-                                if (name == null || name.isEmpty())
+                                toClient.add(i, new ObjectOutputStream(socket.getOutputStream()));
+                                toClient.get(i).flush();
+                                fromClient.add(i, new ObjectInputStream(socket.getInputStream()));
+                                names.add(i, fromClient.get(i).readUTF());
+                                if (names.get(i) == null || names.get(i).isEmpty())
                                 {
-                                    name = "Anonymous_" + i;
+                                    names.set(i, "Anonymous_" + i);
                                 }
-                                log.appendText(new Date() + ": Player '" + name
+                                //new Event(new EventType("Player Joined"));
+                                log.appendText(new Date() + ": Player '" + names.get(i)
                                         + "' has joined session #" + sessionNum + "\n");
                             } 
                             catch (IOException e)
@@ -99,7 +102,9 @@ public class Server extends Application implements BlackjackConstants
                             }
                             
                             new Thread().start();
-                            new HandleSession(players, sessionNum, log);
+                            HandleSession session = new HandleSession(players, names, toClient, fromClient, sessionNum, log);
+                            session.broadcastClients(names);
+                            session.broadcastClients(players.get(i));
                         }
                         sessionNum++;
                     } 
@@ -128,22 +133,25 @@ public class Server extends Application implements BlackjackConstants
  */
 class HandleSession implements Runnable, BlackjackConstants
 {
-    private Player[] players;
+    private List<Player> players;
     private final int sessionNum;
     private TextArea log;
-
-    private ObjectInputStream[] fromClient;
-    private ObjectOutputStream[] toClient;
+    private List<String> names;
+    private List<ObjectInputStream> fromClient;
+    private List<ObjectOutputStream> toClient;
     private Deck deck = new Deck();
-
+    
     /**
      * @param socket client socket
      * @param sessionNum numerical id for client
      * @param log reference to the server log
      */
-    public HandleSession(Player[] players, int sessionNum, TextArea log)
+    public HandleSession(List<Player> players, List<String> names, List<ObjectOutputStream>  toClient, List<ObjectInputStream> fromClient, int sessionNum, TextArea log)
     {
         this.players = players;
+        this.names = names;
+        this.toClient = toClient;
+        this.fromClient = fromClient;
         this.sessionNum = sessionNum;
         this.log = log;
     }
@@ -153,16 +161,10 @@ class HandleSession implements Runnable, BlackjackConstants
     {
         try
         {
-            for (int i = 0; i < MAX_PLAYER_COUNT; i++)
+            for (int i = 0; i < names.size(); i++)
             {
-                toClient[i] = new ObjectOutputStream(players[i].getSocket().getOutputStream());
-                toClient[i].flush();
-                fromClient[i] = new ObjectInputStream(players[i].getSocket().getInputStream());
-            }
-
-            while (true) //runs indefinitely
-            {
-                //To-do ~ Implement data passing on server-side
+                toClient.get(i).writeObject(names);
+                toClient.get(i).flush();
             }
         } 
         catch (Exception e)
@@ -170,16 +172,30 @@ class HandleSession implements Runnable, BlackjackConstants
             System.err.println(e);
         }
     }
+    
+    public void broadcastClients(Object object)
+    {
+        if (object == null)
+            return;
+        for (int i = 0; i < players.size(); i++)
+            try
+            {
+                toClient.get(i).writeObject(object);
+                toClient.get(i).flush();
+            }
+            catch (IOException e)
+            {
+                System.err.println(e);
+            }
+    }
 
     public void hit(int playerid) throws IOException
     {
-        OutputStream output;
-        players[playerid].addCardFirstHand(deck.draw());
-        if (getValue(players[playerid].getFirstHand()) > 21)
+        players.get(playerid).addCardFirstHand(deck.draw());
+        if (getValue(players.get(playerid).getFirstHand()) > 21)
         {
 
         }
-
     }
 
     public int getValue(ArrayList<Card> hand)
@@ -188,7 +204,6 @@ class HandleSession implements Runnable, BlackjackConstants
         for (int i = 0; i < hand.size(); i++)
         {
             sum += hand.remove(i).getNumber().getValue();
-
         }
         return sum;
     }
