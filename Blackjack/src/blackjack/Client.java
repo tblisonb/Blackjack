@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.LinkedList;
 import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -33,10 +34,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
 {
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
-    private TextField player1Field, player2Field, player3Field, player4Field,
-                      creditsField, betField;
+    private TextField creditsField, betField;
+    private TextField[] playerFields;
     private String name;
     private String ip;
+    private List<Player> players;
     
     @Override
     public void start(Stage primaryStage)
@@ -204,7 +206,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         });
         
         //player 1
-        player1Field = new TextField();
+        TextField player1Field = new TextField();
         player1Field.setLayoutX(157);
         player1Field.setLayoutY(550);
         player1Field.setEditable(false);
@@ -212,7 +214,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         player1Field.setFont(Font.font("Times New Roman"));
         
         //player 2
-        player2Field = new TextField();
+        TextField player2Field = new TextField();
         player2Field.setLayoutX(276);
         player2Field.setLayoutY(550);
         player2Field.setEditable(false);
@@ -220,7 +222,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         player2Field.setFont(Font.font("Times New Roman"));
         
         //player 3
-        player3Field = new TextField();
+        TextField player3Field = new TextField();
         player3Field.setLayoutX(908);
         player3Field.setLayoutY(550);
         player3Field.setEditable(false);
@@ -228,12 +230,18 @@ public class Client extends Application implements Runnable, BlackjackConstants
         player3Field.setFont(Font.font("Times New Roman"));
         
         //player 4
-        player4Field = new TextField();
+        TextField player4Field = new TextField();
         player4Field.setLayoutX(1026);
         player4Field.setLayoutY(550);
         player4Field.setEditable(false);
         player4Field.setPrefWidth(96);
         player4Field.setFont(Font.font("Times New Roman"));
+        
+        playerFields = new TextField[4];
+        playerFields[0] = player1Field;
+        playerFields[1] = player2Field;
+        playerFields[2] = player3Field;
+        playerFields[3] = player4Field;
         
         grid.setMouseTransparent(true);
         fieldPane.setMouseTransparent(true);
@@ -290,19 +298,16 @@ public class Client extends Application implements Runnable, BlackjackConstants
                     Object object = fromServer.readObject();
                     try
                     {
-                        List<String> temp = (List<String>)object;
-                        player1Field.setText(temp.remove(0));
-                        player2Field.setText(temp.remove(0));
-                        player3Field.setText(temp.remove(0));
-                        player4Field.setText(temp.remove(0));
-                    }
-                    catch (ClassCastException e)
-                    {
-                        creditsField.setText(((Player)object).getCredits() + "");
+                        this.players = (LinkedList<Player>)object;
+                        for (int i = 0; i < players.size(); i++)
+                            if (!(players.get(i).getName().equals(name)))
+                                playerFields[i].setText(players.get(i).getName());
+                            else
+                                creditsField.setText((players.get(i).getCredits() + ""));
                     }
                     catch (Exception e)
                     {
-                        System.err.println("Unknown Exception");
+                        System.err.println(e);
                     }
                 }
             }

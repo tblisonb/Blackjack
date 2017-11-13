@@ -41,11 +41,13 @@ class Player extends Dealer implements Serializable
     private ArrayList<Card> hand2;
     private int credits;
     private State state;
+    private String name;
     
-    public Player()
+    public Player(String name)
     {
         this.hand2 = new ArrayList<>();
         credits = 500;
+        this.name = name;
     }
     
     public ArrayList<Card> getSecondHand()
@@ -76,5 +78,10 @@ class Player extends Dealer implements Serializable
     public void setState(State state)
     {
         this.state = state;
+    }
+    
+    public String getName()
+    {
+        return name;
     }
 }

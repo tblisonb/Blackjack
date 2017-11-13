@@ -62,7 +62,6 @@ public class Server extends Application implements BlackjackConstants
                 while (true) //runs indefinitely
                 {
                     List<Player> players = new LinkedList<>();
-                    List<String> names = new LinkedList<>();
                     List<ObjectInputStream> fromClient = new LinkedList<>();
                     List<ObjectOutputStream> toClient = new LinkedList<>();
                     try
@@ -75,19 +74,19 @@ public class Server extends Application implements BlackjackConstants
                                     + "\n");
 
                             Socket socket = serverSocket.accept();
-                            players.add(i, new Player());
                             try
                             {
                                 toClient.add(i, new ObjectOutputStream(socket.getOutputStream()));
                                 toClient.get(i).flush();
                                 fromClient.add(i, new ObjectInputStream(socket.getInputStream()));
-                                names.add(i, fromClient.get(i).readUTF());
-                                if (names.get(i) == null || names.get(i).isEmpty())
-                                {
-                                    names.set(i, "Anonymous_" + i);
-                                }
+                                String name = fromClient.get(i).readUTF();
+                                
+                                if (name == null || name.equals(""))
+                                    name = "Anonymous_" + (i + 1);
+                                
+                                players.add(i, new Player(name));
                                 //new Event(new EventType("Player Joined"));
-                                log.appendText(new Date() + ": Player '" + names.get(i)
+                                log.appendText(new Date() + ": Player '" + name
                                         + "' has joined session #" + sessionNum + "\n");
                             } 
                             catch (IOException e)
@@ -102,9 +101,8 @@ public class Server extends Application implements BlackjackConstants
                             }
                             
                             new Thread().start();
-                            HandleSession session = new HandleSession(players, names, toClient, fromClient, sessionNum, log);
-                            session.broadcastClients(names);
-                            session.broadcastClients(players.get(i));
+                            HandleSession session = new HandleSession(players, toClient, fromClient, sessionNum, log);
+                            session.broadcastClients(players);
                         }
                         sessionNum++;
                     } 
@@ -136,9 +134,8 @@ class HandleSession implements Runnable, BlackjackConstants
     private List<Player> players;
     private final int sessionNum;
     private TextArea log;
-    private List<String> names;
-    private List<ObjectInputStream> fromClient;
-    private List<ObjectOutputStream> toClient;
+    private final List<ObjectInputStream> fromClient;
+    private final List<ObjectOutputStream> toClient;
     private Deck deck = new Deck();
     
     /**
@@ -146,10 +143,9 @@ class HandleSession implements Runnable, BlackjackConstants
      * @param sessionNum numerical id for client
      * @param log reference to the server log
      */
-    public HandleSession(List<Player> players, List<String> names, List<ObjectOutputStream>  toClient, List<ObjectInputStream> fromClient, int sessionNum, TextArea log)
+    public HandleSession(List<Player> players, List<ObjectOutputStream>  toClient, List<ObjectInputStream> fromClient, int sessionNum, TextArea log)
     {
         this.players = players;
-        this.names = names;
         this.toClient = toClient;
         this.fromClient = fromClient;
         this.sessionNum = sessionNum;
@@ -160,12 +156,11 @@ class HandleSession implements Runnable, BlackjackConstants
     public void run()
     {
         try
-        {
-            for (int i = 0; i < names.size(); i++)
+        {/*
+            for (int i = 0; i < players.size(); i++)
             {
-                toClient.get(i).writeObject(names);
-                toClient.get(i).flush();
-            }
+                broadcastClients(players);
+            }*/
         } 
         catch (Exception e)
         {
