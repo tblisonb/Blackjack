@@ -20,7 +20,7 @@ public class Card
     
     private Suit suit;
     private Number number;
-     private String unicode;
+    private String unicode;//To disply a card, simply call this string value.
     
     public Card(Suit suit, Number number)
     {
@@ -53,5 +53,9 @@ public class Card
     public Number getNumber() 
     {
         return number;
+    }
+    
+    public String toString(){
+        return unicode;
     }
 }
