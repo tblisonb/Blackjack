@@ -205,7 +205,8 @@ class HandleSession implements Runnable, BlackjackConstants
         players.get(playerid).addCardFirstHand(deck.draw());
         if (getValue(players.get(playerid).getFirstHand()) > 21)
         {
-
+               System.out.println("loss test");
+               
         }
     }
 
