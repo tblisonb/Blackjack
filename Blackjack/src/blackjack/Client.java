@@ -167,7 +167,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         //current bet field
         betField = new TextField();
-        betField.setEditable(false);
+        //betField.setEditable(false);
         betField.setFont(Font.font("Times New Roman", 24));
         //betField.setPrefHeight(34);
         //betField.setPrefWidth(80);
@@ -204,7 +204,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnHit.setFont(Font.font("Times New Roman", 16));
         btnHit.setOnAction((ActionEvent event) -> 
         {
-            System.out.println("HIT");
+            players.get(1).setState(Player.State.HIT);
         });
         
         //player 1
