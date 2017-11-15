@@ -8,6 +8,7 @@ import java.util.Random;
 public class Deck {
     private Card card[] = new Card[52];
     private int size = 52;
+    private final String cardBackUnicode = "\uD83C\uDCA0";
 
     public Deck() {
         int sum = 0;
