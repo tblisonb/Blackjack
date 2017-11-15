@@ -115,7 +115,7 @@ public class Server extends Application implements BlackjackConstants
                     {
                         System.err.println(e);
                     }
-                }
+                }//end of server while(true)
             }).start();
         } 
         catch (IOException e)
@@ -179,7 +179,8 @@ class HandleSession implements Runnable, BlackjackConstants
                         System.err.println(e);
                     }
                     currentPlayerNum = (++currentPlayerNum) % 5;
-                }
+                }//end of thread while(true)
+                
             }
             catch (IOException | ClassNotFoundException e)
             {

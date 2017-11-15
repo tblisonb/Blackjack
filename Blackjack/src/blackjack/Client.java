@@ -27,6 +27,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -248,6 +249,13 @@ public class Client extends Application implements Runnable, BlackjackConstants
         player4Field.setPrefWidth(96);
         player4Field.setFont(Font.font("Times New Roman"));
         
+        //main card area
+        Text mainCardArea = new Text();
+        mainCardArea.setLayoutX(581);
+        mainCardArea.setLayoutY(550);
+        mainCardArea.setFont(Font.font("Times New Roman", 180));
+        mainCardArea.setText("\uD83C\uDCA2");
+        
         playerFields = new TextField[4];
         playerFields[0] = player1Field;
         playerFields[1] = player2Field;
@@ -259,7 +267,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         buttonPane.getChildren().addAll(btnStay, btnHit);
         grid.getChildren().addAll(betLabel, creditsLabel, betField, creditsField);
-        fieldPane.getChildren().addAll(player1Field, player2Field, player3Field, player4Field);
+        fieldPane.getChildren().addAll(player1Field, player2Field, player3Field, player4Field, mainCardArea);
         root.getChildren().addAll(grid, buttonPane, fieldPane);
         
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
