@@ -1,5 +1,6 @@
 package blackjack;
 
+import blackjack.Player.State;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -39,6 +40,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private String name;
     private String ip;
     private List<Player> players;
+    private int currentPlayer = -1;
     
     @Override
     public void start(Stage primaryStage)
@@ -181,6 +183,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         //credits available field
         creditsField = new TextField();
+        
         creditsField.setEditable(false);
         creditsField.setFont(Font.font("Times New Roman", 24));
         //creditsField.setPrefHeight(34);
@@ -204,7 +207,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnHit.setFont(Font.font("Times New Roman", 16));
         btnHit.setOnAction((ActionEvent event) -> 
         {
-            players.get(1).setState(Player.State.HIT);
+         cHit(currentPlayer);  
         });
         
         //player 1
@@ -261,7 +264,9 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         run();
     }
-    
+    public void cHit(int current){
+    players.get(current).setState(State.HIT);
+    }
     private boolean connectToServer(String ip)
     {
         Socket socket = null;
@@ -301,11 +306,14 @@ public class Client extends Application implements Runnable, BlackjackConstants
                     try
                     {
                         this.players = (LinkedList<Player>)object;
-                        for (int i = 0; i < players.size(); i++)
-                            if (!(players.get(i).getName().equals(name)))
+                        currentPlayer++;
+                        for (int i = 0; i < players.size(); i++){
+                          //  if (!(players.get(i).getName().equals(name)))
                                 playerFields[i].setText(players.get(i).getName());
-                            else
+                           // else
                                 creditsField.setText((players.get(i).getCredits() + ""));
+                                
+                        }
                     }
                     catch (Exception e)
                     {
