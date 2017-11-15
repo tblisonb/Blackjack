@@ -57,6 +57,11 @@ class Player extends Dealer implements Serializable
         return state;
     }
     
+    public State getState()
+    {
+        return state;
+    }
+    
     public String getName()
     {
         return name;
