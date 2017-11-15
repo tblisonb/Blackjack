@@ -7,7 +7,7 @@ class Player extends Dealer implements Serializable
 {
     public enum State 
     { 
-        DEFAULT, HIT, STAY;
+        DEFAULT, HIT, STAY, WON;
     }
     
     private ArrayList<Card> hand2;
@@ -51,6 +51,10 @@ class Player extends Dealer implements Serializable
     public void setState(State state)
     {
         this.state = state;
+    }
+     public State getState()
+    {
+        return state;
     }
     
     public String getName()
