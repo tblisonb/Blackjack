@@ -72,6 +72,7 @@ public class Server extends Application implements BlackjackConstants
                                 + "session #" + sessionNum + "\n");
                         new Thread().start();
                         HandleSession session = new HandleSession(sessionNum, log);
+                        
                         //poll for new client connection
                         for (int i = 0; i < MAX_PLAYER_COUNT; i++)
                         {
@@ -88,6 +89,12 @@ public class Server extends Application implements BlackjackConstants
                                 String name = fromClient.get(i).readUTF();
                                 
                                 players.add(i, new Player(name));
+                                System.out.println(players.get(i).getState());
+                                 if(players.get(i).getState() == State.HIT){
+                                     
+                            System.out.println("hitting");
+                            session.hit(i);
+                        }
                                 //new Event(new EventType("Player Joined"));
                                 log.appendText(new Date() + ": Player '" + name
                                         + "' has joined session #" + sessionNum + "\n");
@@ -163,8 +170,9 @@ class HandleSession implements Runnable, BlackjackConstants
                     try
                     {
                         players.set(currentPlayerNum, (Player)object);
-                        if(players.get(currentPlayerNum).getState() == State.HIT)
-                            hit(currentPlayerNum);
+                        System.out.println(players.get(currentPlayerNum).getState());
+                       
+                        
                     }
                     catch (Exception e)
                     {
@@ -215,6 +223,7 @@ class HandleSession implements Runnable, BlackjackConstants
         }
         else
             players.get(playerid).setState(State.STAY);
+        toClient.get(playerid).writeObject(players.get(playerid));
     }
     public void stay(int playerid){
     players.get(playerid).setState(State.STAY);

@@ -7,6 +7,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -207,7 +209,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnHit.setFont(Font.font("Times New Roman", 16));
         btnHit.setOnAction((ActionEvent event) -> 
         {
-         cHit(currentPlayer);  
+            try {  
+                cHit(currentPlayer);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         
         //player 1
@@ -264,8 +270,12 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         run();
     }
-    public void cHit(int current){
+    public void cHit(int current) throws IOException{
     players.get(current).setState(State.HIT);
+    toServer.writeObject(players.get(current));
+    String credits = "";
+    credits += players.get(current).getCredits();
+     creditsField.setText((credits));
     }
     private boolean connectToServer(String ip)
     {
@@ -299,18 +309,22 @@ public class Client extends Application implements Runnable, BlackjackConstants
             {
                 toServer.writeUTF(name);
                 toServer.flush();
+                currentPlayer++;
 
-                while (true)
-                {
+                while (true){
+                
+                    System.out.println("testing the loop");
                     Object object = fromServer.readObject();
                     try
                     {
                         this.players = (LinkedList<Player>)object;
-                        currentPlayer++;
+                        
+                        toServer.writeObject(this.players.get(currentPlayer));
                         for (int i = 0; i < players.size(); i++){
                           //  if (!(players.get(i).getName().equals(name)))
                                 playerFields[i].setText(players.get(i).getName());
                            // else
+                            System.out.println("testing credits");
                                 creditsField.setText((players.get(i).getCredits() + ""));
                                 
                         }
