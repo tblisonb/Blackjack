@@ -6,6 +6,7 @@
 package blackjack;
 
 import static blackjack.BlackjackConstants.MAX_PLAYER_COUNT;
+import blackjack.Player.State;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -135,6 +136,7 @@ class HandleSession implements Runnable, BlackjackConstants
     private List<ObjectOutputStream> toClient;
     private Deck deck = new Deck();
     private int currentPlayerNum;
+   
     
     /**
      * @param socket client socket
@@ -161,6 +163,8 @@ class HandleSession implements Runnable, BlackjackConstants
                     try
                     {
                         players.set(currentPlayerNum, (Player)object);
+                        if(players.get(currentPlayerNum).getState() == State.HIT)
+                            hit(currentPlayerNum);
                     }
                     catch (Exception e)
                     {
@@ -206,8 +210,27 @@ class HandleSession implements Runnable, BlackjackConstants
         if (getValue(players.get(playerid).getFirstHand()) > 21)
         {
                System.out.println("loss test");
+               players.get(playerid).addCredits(-50);
                
         }
+        else
+            players.get(playerid).setState(State.STAY);
+    }
+    public void stay(int playerid){
+    players.get(playerid).setState(State.STAY);
+    }
+    
+    public int winner(){
+        int winner  = getValue(players.get(0).getFirstHand());
+        int index = 0;
+        Player play;
+    for(int i =0; i < players.size(); i++){
+    if(getValue(players.get(i).getFirstHand()) > winner)
+        winner = getValue(players.get(i).getFirstHand());
+    index  = 0;
+    }
+    players.get(index).addCredits(index);
+    return index;
     }
 
     public int getValue(ArrayList<Card> hand)
