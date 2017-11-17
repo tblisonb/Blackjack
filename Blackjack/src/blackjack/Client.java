@@ -210,11 +210,13 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnHit.setFont(Font.font("Times New Roman", 16));
         btnHit.setOnAction((ActionEvent event) -> 
         {
-            try {  
-                cHit(currentPlayer);
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            //try {  
+              //  cHit(currentPlayer);
+         //   } catch (IOException ex) {
+         //       Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+         //   } catch (ClassNotFoundException ex) {
+          //      Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+          //  }
         });
         
         //player 1
@@ -254,7 +256,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         mainCardArea.setLayoutX(581);
         mainCardArea.setLayoutY(550);
         mainCardArea.setFont(Font.font("Times New Roman", 180));
-        mainCardArea.setText("\uD83C\uDCA2");
+        mainCardArea.setText("\uD83C\uDCA0");
         
         playerFields = new TextField[4];
         playerFields[0] = player1Field;
@@ -278,9 +280,16 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         run();
     }
-    public void cHit(int current) throws IOException{
-    players.get(current).setState(State.HIT);
-    toServer.writeObject(players.get(current));
+    public void cHit(int current, Object object) throws IOException, ClassNotFoundException{
+        this.players = (LinkedList<Player>)object;
+    
+        players.get(current).setState(State.HIT);
+        
+    toServer.writeObject(this.players.get(current));
+    toServer.flush();
+    System.out.println("cHit");
+    players.set(current, (Player) fromServer.readObject());
+    System.out.println("cHit2");
     String credits = "";
     credits += players.get(current).getCredits();
      creditsField.setText((credits));
@@ -317,8 +326,9 @@ public class Client extends Application implements Runnable, BlackjackConstants
             {
                 toServer.writeUTF(name);
                 toServer.flush();
+                
                 currentPlayer++;
-
+                
                 while (true){
                 
                     System.out.println("testing the loop");
@@ -334,7 +344,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                            // else
                             System.out.println("testing credits");
                                 creditsField.setText((players.get(i).getCredits() + ""));
-                                
+                                cHit(i,object);
                         }
                     }
                     catch (Exception e)
