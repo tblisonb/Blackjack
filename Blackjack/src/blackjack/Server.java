@@ -171,8 +171,6 @@ class HandleSession implements Runnable, BlackjackConstants
                     {
                         players.set(currentPlayerNum, (Player)object);
                         System.out.println(players.get(currentPlayerNum).getState());
-                       
-                        
                     }
                     catch (Exception e)
                     {
@@ -180,7 +178,6 @@ class HandleSession implements Runnable, BlackjackConstants
                     }
                     currentPlayerNum = (++currentPlayerNum) % 5;
                 }//end of thread while(true)
-                
             }
             catch (IOException | ClassNotFoundException e)
             {
@@ -226,21 +223,25 @@ class HandleSession implements Runnable, BlackjackConstants
             players.get(playerid).setState(State.STAY);
         toClient.get(playerid).writeObject(players.get(playerid));
     }
-    public void stay(int playerid){
-    players.get(playerid).setState(State.STAY);
+    
+    public void stay(int playerid)
+    {
+        players.get(playerid).setState(State.STAY);
     }
     
-    public int winner(){
+    public int winner()
+    {
         int winner  = getValue(players.get(0).getFirstHand());
         int index = 0;
         Player play;
-    for(int i =0; i < players.size(); i++){
-    if(getValue(players.get(i).getFirstHand()) > winner)
-        winner = getValue(players.get(i).getFirstHand());
-    index  = 0;
-    }
-    players.get(index).addCredits(index);
-    return index;
+        for(int i =0; i < players.size(); i++)
+        {
+            if(getValue(players.get(i).getFirstHand()) > winner)
+                winner = getValue(players.get(i).getFirstHand());
+            index = 0;
+        }
+        players.get(index).addCredits(index);
+        return index;
     }
 
     public int getValue(ArrayList<Card> hand)

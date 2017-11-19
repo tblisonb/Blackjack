@@ -280,20 +280,23 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         run();
     }
-    public void cHit(int current, Object object) throws IOException, ClassNotFoundException{
-        this.players = (LinkedList<Player>)object;
     
+    public void cHit(int current, Object object) throws IOException, ClassNotFoundException
+    {
+        this.players = (LinkedList<Player>)object;
         players.get(current).setState(State.HIT);
+        toServer.writeObject(this.players.get(current));
+        toServer.flush();
         
-    toServer.writeObject(this.players.get(current));
-    toServer.flush();
-    System.out.println("cHit");
-    players.set(current, (Player) fromServer.readObject());
-    System.out.println("cHit2");
-    String credits = "";
-    credits += players.get(current).getCredits();
-     creditsField.setText((credits));
+        System.out.println("cHit");
+        players.set(current, (Player) fromServer.readObject());
+        System.out.println("cHit2");
+        
+        String credits = "";
+        credits += players.get(current).getCredits();
+        creditsField.setText((credits));
     }
+    
     private boolean connectToServer(String ip)
     {
         Socket socket = null;

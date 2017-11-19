@@ -10,4 +10,5 @@ public interface BlackjackConstants
     public static final int WINDOW_WIDTH = 1280;
     public static final int WINDOW_HEIGHT = 720;
     public static final boolean ALLOW_RESIZE = false;
+    public final String CARD_BACK_UNICODE = "\uD83C\uDCA0";
 }

@@ -5,15 +5,14 @@ import java.util.ArrayList;
 
 class Player extends Dealer implements Serializable
 {
-    public enum State 
-    { 
-        DEFAULT, HIT, STAY, WON;
-    }
-    
     private ArrayList<Card> hand2;
     private int credits;
     private State state;
     private String name;
+    public enum State 
+    { 
+        DEFAULT, HIT, STAY, WON;
+    }
     
     public Player(String name)
     {
@@ -52,6 +51,7 @@ class Player extends Dealer implements Serializable
     {
         this.state = state;
     }
+    
      public State getState()
     {
         return state;
