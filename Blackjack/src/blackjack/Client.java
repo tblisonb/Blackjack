@@ -140,21 +140,22 @@ public class Client extends Application implements Runnable, BlackjackConstants
     
     public void buildGUI(Stage primaryStage)
     {
-        StackPane root = new StackPane();
-        GridPane grid = new GridPane();
-        Pane buttonPane = new Pane(), fieldPane = new Pane(), shapePane = new Pane();
+        //StackPane root = new StackPane();
+        //GridPane grid = new GridPane();
+        Pane root = new Pane();
         
         //set and configure background
-        grid.setStyle("-fx-background-image: url(" + BACKGROUND + "); \n" +
+        root.setStyle("-fx-background-image: url(" + BACKGROUND + "); \n" +
                       "-fx-background-position: center center; \n" +
                       "-fx-background-repeat: stretch; \n" + 
                       "-fx-background-size: 1280 720;");
         //grid.setPadding(new Insets(10, 10, 10, 10));
-        grid.setVgap(8);
+        //grid.setVgap(8);
         //grid.setHgap(10);
-        grid.setAlignment(Pos.CENTER);
+        //grid.setAlignment(Pos.CENTER);
         
         //add column and row constraints to keep elements in the proper position
+        /*
         grid.getColumnConstraints().add(new ColumnConstraints(235));
         grid.getColumnConstraints().add(new ColumnConstraints(75));
         grid.getColumnConstraints().add(new ColumnConstraints(250));
@@ -162,36 +163,34 @@ public class Client extends Application implements Runnable, BlackjackConstants
         grid.getColumnConstraints().add(new ColumnConstraints(345));
         grid.getColumnConstraints().add(new ColumnConstraints(75));
         grid.getRowConstraints().add(new RowConstraints(50));
-        grid.getRowConstraints().add(new RowConstraints(650));
+        grid.getRowConstraints().add(new RowConstraints(650));*/
         
         //current bet label
         Label betLabel = new Label("CURRENT BET: ");
         betLabel.setFont(Font.font("Times New Roman", 32));
         betLabel.setTextFill(Color.web("#FFD000"));
-        GridPane.setConstraints(betLabel, 0, 0);
         
         //current bet field
         betField = new TextField();
         //betField.setEditable(false);
         betField.setFont(Font.font("Times New Roman", 24));
         //betField.setPrefHeight(34);
-        //betField.setPrefWidth(80);
-        GridPane.setConstraints(betField, 1, 0);
+        betField.setPrefWidth(80);
+        betField.setLayoutX(235);
         
         //credits available label
         Label creditsLabel = new Label("CREDITS AVAILABLE: ");
         creditsLabel.setFont(Font.font("Times New Roman", 32));
         creditsLabel.setTextFill(Color.web("#FFD000"));
-        GridPane.setConstraints(creditsLabel, 4, 0);
-        
+        creditsLabel.setLayoutX(810);        
         //credits available field
         creditsField = new TextField();
         
         creditsField.setEditable(false);
         creditsField.setFont(Font.font("Times New Roman", 24));
         //creditsField.setPrefHeight(34);
-        //creditsField.setPrefWidth(80);
-        GridPane.setConstraints(creditsField, 5, 0);
+        creditsField.setPrefWidth(80);
+        creditsField.setLayoutX(1155);
         
         //stay button
         Button btnStay = new Button("STAY");
@@ -279,14 +278,14 @@ public class Client extends Application implements Runnable, BlackjackConstants
         playerFields[2] = player3Field;
         playerFields[3] = player4Field;
         
-        grid.setMouseTransparent(true);
-        fieldPane.setMouseTransparent(true);
-        
-        buttonPane.getChildren().addAll(btnStay, btnHit);
+        /*
+        fieldPane.getChildren().addAll(btnStay, btnHit);
         grid.getChildren().addAll(betLabel, creditsLabel, betField, creditsField);
         fieldPane.getChildren().addAll(player1Field, player2Field, player3Field, player4Field, mainCardArea);
-        shapePane.getChildren().addAll(turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);
-        root.getChildren().addAll(grid, buttonPane, fieldPane, shapePane);
+        //fieldPane.getChildren().addAll(turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);*/
+        root.getChildren().addAll(btnStay, btnHit, betLabel, creditsLabel, betField, creditsField, 
+                player1Field, player2Field, player3Field, player4Field, mainCardArea,
+                turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);
         
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         primaryStage.setTitle("Blackjack");
