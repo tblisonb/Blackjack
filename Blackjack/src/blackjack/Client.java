@@ -1,5 +1,6 @@
 package blackjack;
 
+import blackjack.Player.Move;
 import blackjack.Player.State;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -7,8 +8,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -26,6 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -40,6 +40,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private ObjectOutputStream toServer;
     private TextField creditsField, betField;
     private TextField[] playerFields;
+    private Polygon[] turnMarker;
     private String ip;
     private List<Player> players;
     private Player supportedPlayer;
@@ -141,7 +142,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     {
         StackPane root = new StackPane();
         GridPane grid = new GridPane();
-        Pane buttonPane = new Pane(), fieldPane = new Pane();
+        Pane buttonPane = new Pane(), fieldPane = new Pane(), shapePane = new Pane();
         
         //set and configure background
         grid.setStyle("-fx-background-image: url(" + BACKGROUND + "); \n" +
@@ -257,6 +258,21 @@ public class Client extends Application implements Runnable, BlackjackConstants
         mainCardArea.setFont(Font.font("Times New Roman", 180));
         mainCardArea.setText("\uD83C\uDCA0");
         
+        //current turn indicator
+        turnMarker = new Polygon[5];
+        for (int i = 0; i < 5; i++)
+        {
+            turnMarker[i] = new Polygon();
+            turnMarker[i].setFill(Color.web("#FFD000"));
+            turnMarker[i].setVisible(false);
+        }
+        
+        turnMarker[2].getPoints().addAll(new Double[]{186.0, 390.0, 224.0, 390.0, 205.0, 420.0});
+        turnMarker[1].getPoints().addAll(new Double[]{306.0, 390.0, 344.0, 390.0, 325.0, 420.0});
+        turnMarker[0].getPoints().addAll(new Double[]{620.0, 356.0, 658.0, 356.0, 639.0, 386.0});
+        turnMarker[3].getPoints().addAll(new Double[]{936.0, 390.0, 974.0, 390.0, 955.0, 420.0});
+        turnMarker[4].getPoints().addAll(new Double[]{1055.0, 390.0, 1093.0, 390.0, 1074.0, 420.0});
+        
         playerFields = new TextField[4];
         playerFields[0] = player1Field;
         playerFields[1] = player2Field;
@@ -269,7 +285,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
         buttonPane.getChildren().addAll(btnStay, btnHit);
         grid.getChildren().addAll(betLabel, creditsLabel, betField, creditsField);
         fieldPane.getChildren().addAll(player1Field, player2Field, player3Field, player4Field, mainCardArea);
-        root.getChildren().addAll(grid, buttonPane, fieldPane);
+        shapePane.getChildren().addAll(turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);
+        root.getChildren().addAll(grid, buttonPane, fieldPane, shapePane);
         
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         primaryStage.setTitle("Blackjack");
@@ -283,7 +300,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     public void cHit(int current, Object object) throws IOException, ClassNotFoundException
     {
         this.players = (LinkedList<Player>)object;
-        players.get(current).setState(State.HIT);
+        players.get(current).setMove(Move.HIT);
         toServer.writeObject(this.players.get(current));
         toServer.flush();
         
@@ -350,11 +367,14 @@ public class Client extends Application implements Runnable, BlackjackConstants
                                
                     if (isSet == false)
                         if (object.getName().equals(supportedPlayer.getName()))
+                        {
                             supportedPlayer = object;
+                            supportedPlayer.setState(State.ON);
+                        }
                         else
                             players.add(object);
                     
-                    updateFields();
+                    updateFields(); 
                 }
             }
             catch (IOException | ClassNotFoundException e)
@@ -368,7 +388,19 @@ public class Client extends Application implements Runnable, BlackjackConstants
     public void updateFields()
     {
         for (int i = 0; i < players.size(); i++)
+        {
             playerFields[i].setText(players.get(i).getName());
+            if (players.get(i).getState() == State.ON)
+                turnMarker[i].setVisible(true);
+            else
+                turnMarker[i].setVisible(false);
+        }
+        turnMarker[0].setVisible(true);
+        if (supportedPlayer.getState() == State.ON)
+            turnMarker[0].setVisible(true);
+        else
+            turnMarker[0].setVisible(false);
+        
         creditsField.setText(supportedPlayer.getCredits() + "");
     }
     

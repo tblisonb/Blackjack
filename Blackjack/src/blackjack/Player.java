@@ -8,12 +8,18 @@ class Player extends Dealer implements Serializable
     private ArrayList<Card> hand2;
     private int credits;
     private State state;
+    private Move move;
     private final String name;
     private int playerNum;
     
     public enum State 
     { 
-        DEFAULT, HIT, STAY, WON;
+        ON, OFF;
+    }
+    
+    public enum Move
+    {
+        HIT, STAY, DEFAULT
     }
     
     public Player(String name)
@@ -21,7 +27,8 @@ class Player extends Dealer implements Serializable
         this.hand2 = new ArrayList<>();
         this.credits = 500;
         this.name = name;
-        this.state = State.DEFAULT;
+        this.state = State.OFF;
+        this.move = Move.DEFAULT;
         this.playerNum = -1;
     }
     
@@ -73,5 +80,15 @@ class Player extends Dealer implements Serializable
     public int getPlayerNum()
     {
         return playerNum;
+    }
+
+    public void setMove(Move move) 
+    {
+        this.move = move;
+    }
+    
+    public Move getMove() 
+    {
+        return move;
     }
 }

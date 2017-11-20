@@ -6,6 +6,7 @@
 package blackjack;
 
 import static blackjack.BlackjackConstants.MAX_PLAYER_COUNT;
+import blackjack.Player.Move;
 import blackjack.Player.State;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -102,7 +102,7 @@ public class Server extends Application implements BlackjackConstants
                             players.add(i, newPlayer);
                             System.out.println(players.get(i).getState());
                             
-                            if(players.get(i).getState() == State.HIT)
+                            if(players.get(i).getMove() == Move.HIT)
                             {
                                 System.out.println("hitting");
                                 session.hit(i);
@@ -190,7 +190,6 @@ class HandleSession implements Runnable, BlackjackConstants
             {
                 System.err.println(e);
             }
-            catch (IndexOutOfBoundsException e) {}
         }).start();
     }
     
@@ -229,13 +228,13 @@ class HandleSession implements Runnable, BlackjackConstants
                
         }
         else
-            players.get(playerid).setState(State.STAY);
+            players.get(playerid).setMove(Move.STAY);
         toClient.get(playerid).writeObject(players.get(playerid));
     }
     
     public void stay(int playerid)
     {
-        players.get(playerid).setState(State.STAY);
+        players.get(playerid).setMove(Move.STAY);
     }
     
     public int winner()
