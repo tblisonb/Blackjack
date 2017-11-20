@@ -40,10 +40,9 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private ObjectOutputStream toServer;
     private TextField creditsField, betField;
     private TextField[] playerFields;
-    private String name;
     private String ip;
     private List<Player> players;
-    private int currentPlayer = -1;
+    private Player supportedPlayer;
     
     @Override
     public void start(Stage primaryStage)
@@ -121,8 +120,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
                 errorMessage.setText("You must enter a name...");
             else
             {
-                name = usernameInput.getText();
                 ip = ipInput.getText();
+                supportedPlayer = new Player(usernameInput.getText());
                 buildGUI(primaryStage);
             }
         });
@@ -323,37 +322,30 @@ public class Client extends Application implements Runnable, BlackjackConstants
     @Override
     public void run() 
     {
+        players = new LinkedList<>();
         new Thread(() ->
         {
             try
             {
-                toServer.writeUTF(name);
+                toServer.writeObject(supportedPlayer);
                 toServer.flush();
                 
-                currentPlayer++;
-                
-                while (true){
-                
-                    System.out.println("testing the loop");
-                    Object object = fromServer.readObject();
-                    try
-                    {
-                        this.players = (LinkedList<Player>)object;
-                        
-                        toServer.writeObject(this.players.get(currentPlayer));
-                        for (int i = 0; i < players.size(); i++){
-                          //  if (!(players.get(i).getName().equals(name)))
-                                playerFields[i].setText(players.get(i).getName());
-                           // else
-                            System.out.println("testing credits");
-                                creditsField.setText((players.get(i).getCredits() + ""));
-                                cHit(i,object);
+                int currentPlayer = 0;
+                while (true)
+                {
+                    Player object = (Player)fromServer.readObject();
+                    boolean isSet = false;
+                    for (int i = 0; i < players.size(); i++)
+                        if (players.get(i).equals(object))
+                        {
+                            isSet = true;
+                            players.set(players.get(i).getPlayerNum(), object);
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        System.err.println(e);
-                    }
+                    
+                    if (isSet == false)
+                        players.add(object);
+                    
+                    updateFields();
                 }
             }
             catch (IOException | ClassNotFoundException e)
@@ -362,6 +354,15 @@ public class Client extends Application implements Runnable, BlackjackConstants
             }
             catch (IndexOutOfBoundsException e) {}
         }).start();
+    }
+    
+    public void updateFields()
+    {
+        for (int i = 0; i < players.size(); i++)
+            if (!(players.get(i).getName().equals(supportedPlayer.getName())))
+                playerFields[players.size() - i - 1].setText(players.get(i).getName());
+            else
+                creditsField.setText(players.get(i).getCredits() + "");
     }
     
     public static void main(String[] args)

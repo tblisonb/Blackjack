@@ -50,78 +50,84 @@ public class Server extends Application implements BlackjackConstants
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
-
+        
         try
         {
-            //new socket on port 8000
-            ServerSocket serverSocket = new ServerSocket(8000);
-            log.appendText(new Date() + ": Server started at socket 8000\n");
-
-            //new thread for polling for client sockets.
-            new Thread(() -> 
-            {
-                int sessionNum = 1; //keeps track of what client is connected
-                while (true) //runs indefinitely
-                {
-                    List<Player> players = new LinkedList<>();
-                    List<ObjectInputStream> fromClient = new LinkedList<>();
-                    List<ObjectOutputStream> toClient = new LinkedList<>();
-                    try
-                    {
-                        log.appendText(new Date() + ": Starting a thread for "
-                                + "session #" + sessionNum + "\n");
-                        new Thread().start();
-                        HandleSession session = new HandleSession(sessionNum, log);
-                        
-                        //poll for new client connection
-                        for (int i = 0; i < MAX_PLAYER_COUNT; i++)
-                        {
-                            log.appendText(new Date() + ": Waiting for player "
-                                    + (i + 1) + " to join session #" + sessionNum
-                                    + "\n");
-
-                            Socket socket = serverSocket.accept();
-                            try
-                            {
-                                toClient.add(i, new ObjectOutputStream(socket.getOutputStream()));
-                                toClient.get(i).flush();
-                                fromClient.add(i, new ObjectInputStream(socket.getInputStream()));
-                                String name = fromClient.get(i).readUTF();
-                                
-                                players.add(i, new Player(name));
-                                System.out.println(players.get(i).getState());
-                                 if(players.get(i).getState() == State.HIT){
-                                     
-                            System.out.println("hitting");
-                            session.hit(i);
-                        }
-                                //new Event(new EventType("Player Joined"));
-                                log.appendText(new Date() + ": Player '" + name
-                                        + "' has joined session #" + sessionNum + "\n");
-                            } 
-                            catch (IOException e)
-                            {
-                                System.err.println(e);
-                            }
-                            
-                            session.update(players, toClient, fromClient);
-                            if (i == 0)
-                                session.run();
-                            session.broadcastClients(players);
-                        }
-                        sessionNum++;
-                    } 
-                    catch (IOException e)
-                    {
-                        System.err.println(e);
-                    }
-                }//end of server while(true)
-            }).start();
-        } 
+            serverStart(primaryStage, log);
+        }
         catch (IOException e)
         {
             System.err.println(e);
         }
+    }
+    
+    public void serverStart(Stage primaryStage, TextArea log) throws IOException
+    {
+        //new socket on port 8000
+        ServerSocket serverSocket = new ServerSocket(8000);
+        log.appendText(new Date() + ": Server started at socket 8000\n");
+
+        //new thread for polling for client sockets.
+        new Thread(() -> 
+        {
+            int sessionNum = 1; //keeps track of what client is connected
+            while (true) //runs indefinitely
+            {
+                List<Player> players = new LinkedList<>();
+                List<ObjectInputStream> fromClient = new LinkedList<>();
+                List<ObjectOutputStream> toClient = new LinkedList<>();
+                try
+                {
+                    log.appendText(new Date() + ": Starting a thread for "
+                            + "session #" + sessionNum + "\n");
+                    new Thread().start();
+                    HandleSession session = new HandleSession(sessionNum, log);
+
+                    //poll for new client connection
+                    for (int i = 0; i < MAX_PLAYER_COUNT; i++)
+                    {
+                        log.appendText(new Date() + ": Waiting for player "
+                                + (i + 1) + " to join session #" + sessionNum
+                                + "\n");
+
+                        Socket socket = serverSocket.accept();
+                        try
+                        {
+                            toClient.add(i, new ObjectOutputStream(socket.getOutputStream()));
+                            toClient.get(i).flush();
+                            fromClient.add(i, new ObjectInputStream(socket.getInputStream()));
+                            Player newPlayer = (Player)fromClient.get(i).readObject();
+                            newPlayer.setPlayerNum(i);
+                            players.add(i, newPlayer);
+                            System.out.println(players.get(i).getState());
+                            
+                            if(players.get(i).getState() == State.HIT)
+                            {
+                                System.out.println("hitting");
+                                session.hit(i);
+                            }
+                            //new Event(new EventType("Player Joined"));
+                            log.appendText(new Date() + ": Player '" + newPlayer.getName()
+                                    + "' has joined session #" + sessionNum + "\n");
+                        } 
+                        catch (IOException | ClassNotFoundException e)
+                        {
+                            System.err.println(e);
+                        }
+
+                        session.update(players, toClient, fromClient);
+                        if (i == 0)
+                            session.run();
+                        session.broadcastPlayerData(players);
+                    }
+                    sessionNum++;
+                } 
+                catch (IOException e)
+                {
+                    System.err.println(e);
+                }
+            }//end of server while(true)
+        }).start();
     }
 
     public static void main(String[] args)
@@ -177,7 +183,7 @@ class HandleSession implements Runnable, BlackjackConstants
                         System.err.println(e);
                     }
                     currentPlayerNum = (++currentPlayerNum) % 5;
-                }//end of thread while(true)
+                }
             }
             catch (IOException | ClassNotFoundException e)
             {
@@ -187,20 +193,22 @@ class HandleSession implements Runnable, BlackjackConstants
         }).start();
     }
     
-    public void broadcastClients(Object object)
+    public void broadcastPlayerData(List<Player> object)
     {
         if (object == null)
             return;
+        log.appendText("Current Size of Session: " + players.size() + "\n");
         for (int i = 0; i < players.size(); i++)
-            try
-            {
-                toClient.get(i).writeObject(object);
-                toClient.get(i).flush();
-            }
-            catch (IOException e)
-            {
-                System.err.println(e);
-            }
+            for (int j = 0; j < object.size(); j++)
+                try
+                {
+                    toClient.get(i).writeObject(object.get(j));
+                    toClient.get(i).flush();
+                }
+                catch (IOException e)
+                {
+                    System.err.println(e);
+                }
     }
     
     public void update(List<Player> players, List<ObjectOutputStream> toClient, List<ObjectInputStream> fromClient)

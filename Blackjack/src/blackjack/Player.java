@@ -8,7 +8,9 @@ class Player extends Dealer implements Serializable
     private ArrayList<Card> hand2;
     private int credits;
     private State state;
-    private String name;
+    private final String name;
+    private int playerNum;
+    
     public enum State 
     { 
         DEFAULT, HIT, STAY, WON;
@@ -20,6 +22,7 @@ class Player extends Dealer implements Serializable
         this.credits = 500;
         this.name = name;
         this.state = State.DEFAULT;
+        this.playerNum = -1;
     }
     
     public ArrayList<Card> getSecondHand()
@@ -60,5 +63,15 @@ class Player extends Dealer implements Serializable
     public String getName()
     {
         return name;
+    }
+    
+    public void setPlayerNum(int num)
+    {
+        this.playerNum = num;
+    }
+    
+    public int getPlayerNum()
+    {
+        return playerNum;
     }
 }
