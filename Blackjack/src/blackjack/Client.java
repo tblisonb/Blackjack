@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -209,13 +211,13 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnHit.setFont(Font.font("Times New Roman", 16));
         btnHit.setOnAction((ActionEvent event) -> 
         {
-            //try {  
-              //  cHit(currentPlayer);
-         //   } catch (IOException ex) {
-         //       Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-         //   } catch (ClassNotFoundException ex) {
-          //      Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-          //  }
+            try {  
+                cHit();
+           } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+           }
         });
         
         //player 1
@@ -296,19 +298,19 @@ public class Client extends Application implements Runnable, BlackjackConstants
         run();
     }
     
-    public void cHit(int current, Object object) throws IOException, ClassNotFoundException
+    public void cHit() throws IOException, ClassNotFoundException
     {
-        this.players = (LinkedList<Player>)object;
-        players.get(current).setMove(Move.HIT);
-        toServer.writeObject(this.players.get(current));
+        
+        supportedPlayer.setMove(Move.HIT);
+        toServer.writeObject(supportedPlayer);
         toServer.flush();
         
         System.out.println("cHit");
-        players.set(current, (Player) fromServer.readObject());
+        players.set(0, (Player) fromServer.readObject());
         System.out.println("cHit2");
         
         String credits = "";
-        credits += players.get(current).getCredits();
+        credits += players.get(0).getCredits();
         creditsField.setText((credits));
     }
     
@@ -372,6 +374,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                         }
                         else
                             players.add(object);
+                    System.out.println(players.size());
                     
                     updateFields(); 
                 }
