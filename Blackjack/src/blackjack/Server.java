@@ -96,6 +96,7 @@ public class Server extends Application implements BlackjackConstants
                             toClient.add(i, new ObjectOutputStream(socket.getOutputStream()));
                             toClient.get(i).flush();
                             fromClient.add(i, new ObjectInputStream(socket.getInputStream()));
+                            
                             Player newPlayer = (Player)fromClient.get(i).readObject();
                             newPlayer.setPlayerNum(i);
                             players.add(i, newPlayer);

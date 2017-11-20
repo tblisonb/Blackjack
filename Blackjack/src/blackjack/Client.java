@@ -335,15 +335,24 @@ public class Client extends Application implements Runnable, BlackjackConstants
                 {
                     Player object = (Player)fromServer.readObject();
                     boolean isSet = false;
+                    
                     for (int i = 0; i < players.size(); i++)
-                        if (players.get(i).equals(object))
+                        if (object.getName().equals(supportedPlayer.getName()))
                         {
                             isSet = true;
-                            players.set(players.get(i).getPlayerNum(), object);
+                            supportedPlayer = object;
                         }
-                    
+                        else if (players.get(i).equals(object))
+                        {
+                            isSet = true;
+                            players.set(i, object);
+                        }
+                               
                     if (isSet == false)
-                        players.add(object);
+                        if (object.getName().equals(supportedPlayer.getName()))
+                            supportedPlayer = object;
+                        else
+                            players.add(object);
                     
                     updateFields();
                 }
@@ -359,10 +368,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
     public void updateFields()
     {
         for (int i = 0; i < players.size(); i++)
-            if (!(players.get(i).getName().equals(supportedPlayer.getName())))
-                playerFields[players.size() - i - 1].setText(players.get(i).getName());
-            else
-                creditsField.setText(players.get(i).getCredits() + "");
+            playerFields[i].setText(players.get(i).getName());
+        creditsField.setText(supportedPlayer.getCredits() + "");
     }
     
     public static void main(String[] args)
