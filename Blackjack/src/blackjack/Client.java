@@ -38,6 +38,7 @@ import javafx.stage.WindowEvent;
  */
 public class Client extends Application implements Runnable, BlackjackConstants
 {
+    //Initializes Variables
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
     private TextField creditsField, betField;
@@ -50,6 +51,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private Player supportedPlayer;
     private int turnN;
     
+    //Begins the UI Code
     @Override
     public void start(Stage primaryStage)
     {
@@ -87,7 +89,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         GridPane.setConstraints(btn, 1, 6);
         
         //Error message label 
-        Label errorMessage = new Label("Welcome.");
+        Label errorMessage = new Label("Welcome");
         GridPane.setConstraints(errorMessage, 1, 7);
 
         grid.getChildren().addAll(ipLabel, ipInput,
