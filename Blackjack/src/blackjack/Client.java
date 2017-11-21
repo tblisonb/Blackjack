@@ -302,6 +302,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     {
         
         supportedPlayer.setMove(Move.HIT);
+        
         toServer.writeObject(supportedPlayer);
         toServer.flush();
         
