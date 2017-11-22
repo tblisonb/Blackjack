@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -102,11 +104,9 @@ public class Server extends Application implements BlackjackConstants
                             players.add(i, newPlayer);
                             System.out.println(players.get(i).getState());
                             
-                            if(players.get(i).getMove() == Move.HIT)
-                            {
-                                System.out.println("hitting");
-                                session.hit(i);
-                            }
+                          if(sessionNum == 5){
+                          
+                          }
                             //new Event(new EventType("Player Joined"));
                             log.appendText(new Date() + ": Player '" + newPlayer.getName()
                                     + "' has joined session #" + sessionNum + "\n");
@@ -126,6 +126,8 @@ public class Server extends Application implements BlackjackConstants
                 catch (IOException e)
                 {
                     System.err.println(e);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }//end of server while(true)
         }).start();
@@ -135,6 +137,7 @@ public class Server extends Application implements BlackjackConstants
     {
         launch(args);
     }
+    
 }
 
 /**
@@ -173,11 +176,18 @@ class HandleSession implements Runnable, BlackjackConstants
             {
                 while (true)
                 {
-                    Object object = fromClient.get(currentPlayerNum).readObject();
+                    System.out.println("test1");
+                    Object object = fromClient.get(0).readObject();
                     try
                     {
+                        
                         players.set(currentPlayerNum, (Player)object);
                         System.out.println(players.get(currentPlayerNum).getState());
+                        if(players.get(0).getMove() == Move.HIT){
+                            hit(0);
+                           
+                            
+                        }
                     }
                     catch (Exception e)
                     {
@@ -193,7 +203,7 @@ class HandleSession implements Runnable, BlackjackConstants
         }).start();
     }
     
-    public void broadcastPlayerData(List<Player> object)
+    public void broadcastPlayerData(List<Player> object) throws IOException, ClassNotFoundException
     {
         if (object == null)
             return;
@@ -209,6 +219,9 @@ class HandleSession implements Runnable, BlackjackConstants
                 {
                     System.err.println(e);
                 }
+        if(players.size() == 1){
+       // playGame(object);
+        }
     }
     
     public void update(List<Player> players, List<ObjectOutputStream> toClient, List<ObjectInputStream> fromClient)
@@ -217,9 +230,29 @@ class HandleSession implements Runnable, BlackjackConstants
         this.toClient = toClient;
         this.fromClient = fromClient;
     }
-
-    public void hit(int playerid) throws IOException
+public void playGame(List<Player> players) throws IOException, ClassNotFoundException{
+        int current = 0;
+        System.out.println("hit");
+       
+    while(true){
+        
+        Object play =  fromClient.get(current).readObject();
+        play.getClass();
+        //Player play1 = (Player) play;
+        System.out.println(play.getClass());
+        //players.set(current, (Player) play);
+        
+    if(players.get(current).getMove() == Move.HIT){
+        hit(current);
+        current++;
+    }
+    
+    }
+    
+    }
+    public void hit(int playerid) throws IOException, ClassNotFoundException
     {
+        System.out.println("successful hit");
         players.get(playerid).addCardFirstHand(deck.draw());
         if (getValue(players.get(playerid).getFirstHand()) > 21)
         {
@@ -227,9 +260,11 @@ class HandleSession implements Runnable, BlackjackConstants
                players.get(playerid).addCredits(-50);
                
         }
-        else
+        else{
             players.get(playerid).setMove(Move.STAY);
-        toClient.get(playerid).writeObject(players.get(playerid));
+            players.get(playerid).addCredits(-50);
+            toClient.get(playerid).writeObject(players.get(playerid));
+        }
     }
     
     public void stay(int playerid)
