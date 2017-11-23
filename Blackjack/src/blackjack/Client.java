@@ -307,12 +307,14 @@ public class Client extends Application implements Runnable, BlackjackConstants
         toServer.flush();
         
         System.out.println("cHit");
-        players.set(0, (Player) fromServer.readObject());
+        //Object play = fromServer.readObject();
+        //Player pl = (Player) play;
+        //players.set(0, pl);
         System.out.println("cHit2");
         
         String credits = "";
-        credits += players.get(0).getCredits();
-        creditsField.setText((credits));
+        //credits += players.get(0).getCredits();
+        //creditsField.setText((credits));
     }
     
     private boolean connectToServer(String ip)
