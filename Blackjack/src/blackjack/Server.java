@@ -183,17 +183,20 @@ class HandleSession implements Runnable, BlackjackConstants
                         
                         players.set(currentPlayerNum, (Player)object);
                         System.out.println(players.get(currentPlayerNum).getState());
-                        if(players.get(0).getMove() == Move.HIT){
-                            hit(0);
+                        if(players.get(currentPlayerNum).getMove() == Move.HIT){
+                            hit(currentPlayerNum);
                            
                             
                         }
+                        
                     }
                     catch (Exception e)
                     {
                         System.err.println(e);
                     }
+                    if(players.get(currentPlayerNum).getState() != State.ON){
                     currentPlayerNum = (++currentPlayerNum) % 5;
+                    }
                 }
             }
             catch (IOException | ClassNotFoundException e)
