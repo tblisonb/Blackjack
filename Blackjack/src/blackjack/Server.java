@@ -257,6 +257,7 @@ public void playGame(List<Player> players) throws IOException, ClassNotFoundExce
     {
         System.out.println("successful hit");
         players.get(playerid).addCardFirstHand(deck.draw());
+        System.out.println("hand value "+getValue(players.get(playerid).getFirstHand()));
         if (getValue(players.get(playerid).getFirstHand()) > 21)
         {
                System.out.println("loss test");
