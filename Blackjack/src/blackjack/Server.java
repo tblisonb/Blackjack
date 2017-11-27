@@ -177,12 +177,20 @@ class HandleSession implements Runnable, BlackjackConstants
                 while (true)
                 {
                     System.out.println("test1");
+                    System.out.println("Deck test1: " + deck.draw().getSuit());
                     Object object = fromClient.get(0).readObject();
                     try
                     {
                         
                         players.set(currentPlayerNum, (Player)object);
-                        System.out.println(players.get(currentPlayerNum).getState());
+                        System.out.println(currentPlayerNum +" is: "+players.get(currentPlayerNum).getState());
+                        System.out.println("if size: "+players.get(currentPlayerNum).getFirstHand().size());
+                        if(players.get(currentPlayerNum).getFirstHand().size() <= 0){
+                            
+                            players.get(currentPlayerNum).getFirstHand().add(deck.draw());
+                            players.get(currentPlayerNum).getFirstHand().add(deck.draw());
+                        }
+                        
                         if(players.get(currentPlayerNum).getMove() == Move.HIT){
                             hit(currentPlayerNum);
                            
@@ -195,7 +203,8 @@ class HandleSession implements Runnable, BlackjackConstants
                         System.err.println(e);
                     }
                     if(players.get(currentPlayerNum).getState() != State.ON){
-                    currentPlayerNum = (++currentPlayerNum) % 5;
+                    currentPlayerNum = (++currentPlayerNum) % 3;
+                        System.out.println(currentPlayerNum);
                     }
                 }
             }
@@ -257,6 +266,8 @@ public void playGame(List<Player> players) throws IOException, ClassNotFoundExce
     {
         System.out.println("successful hit");
         players.get(playerid).addCardFirstHand(deck.draw());
+        
+        System.out.println("draw: "+deck.draw().getSuit());
         System.out.println("hand value "+getValue(players.get(playerid).getFirstHand()));
         if (getValue(players.get(playerid).getFirstHand()) > 21)
         {
@@ -265,9 +276,11 @@ public void playGame(List<Player> players) throws IOException, ClassNotFoundExce
                
         }
         else{
+            //System.out.println("size "+players.get(playerid).getFirstHand().size());
             players.get(playerid).setMove(Move.STAY);
             players.get(playerid).addCredits(-50);
             toClient.get(playerid).writeObject(players.get(playerid));
+            toClient.get(playerid).flush();
         }
     }
     
@@ -293,11 +306,17 @@ public void playGame(List<Player> players) throws IOException, ClassNotFoundExce
 
     public int getValue(ArrayList<Card> hand)
     {
+        System.out.println("size is: "+hand.size());
         int sum = 0;
-        for (int i = 0; i < hand.size(); i++)
+        ArrayList<Card> hand2 = new ArrayList();
+        hand2 = (ArrayList<Card>) hand.clone();
+        int i  =0;
+        while(hand2.size() > 0)
         {
-            sum += hand.remove(i).getNumber().getValue();
+            // System.out.println("value is: "+hand2.remove(i).getNumber().getValue());
+            sum += hand2.remove(i).getNumber().getValue();
         }
+        System.out.println("return success");
         return sum;
     }
 }

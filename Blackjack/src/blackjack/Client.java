@@ -46,6 +46,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private String ip;
     private List<Player> players;
     private Player supportedPlayer;
+    private int turnN;
     
     @Override
     public void start(Stage primaryStage)
@@ -202,6 +203,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnStay.setOnAction((ActionEvent event) -> 
         {
             System.out.println("STAY");
+            turnN++;
+            updateFields();
         });
         
         //hit button
@@ -211,6 +214,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnHit.setFont(Font.font("Times New Roman", 16));
         btnHit.setOnAction((ActionEvent event) -> 
         {
+           //if(supportedPlayer.getState() == State.)
             try {  
                 cHit();
            } catch (IOException ex) {
@@ -313,6 +317,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         System.out.println("cHit2");
         
         String credits = "";
+        
         //credits += players.get(0).getCredits();
         //creditsField.setText((credits));
     }
@@ -351,7 +356,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                 toServer.writeObject(supportedPlayer);
                 toServer.flush();
                 
-                int currentPlayer = 0;
+                
                 while (true)
                 {
                     Player object = (Player)fromServer.readObject();
@@ -400,13 +405,14 @@ public class Client extends Application implements Runnable, BlackjackConstants
             else
                 turnMarker[i].setVisible(false);
         }
-        turnMarker[0].setVisible(true);
+        //turnMarker[0].setVisible(true);
         if (supportedPlayer.getState() == State.ON)
-            turnMarker[0].setVisible(true);
+            turnMarker[turnN].setVisible(true);
         else
-            turnMarker[0].setVisible(false);
+            turnMarker[turnN].setVisible(false);
         
         creditsField.setText(supportedPlayer.getCredits() + "");
+        System.out.println(turnN);
     }
     
     public static void main(String[] args)

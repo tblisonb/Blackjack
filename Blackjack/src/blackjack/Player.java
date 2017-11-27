@@ -19,7 +19,7 @@ class Player extends Dealer implements Serializable
     
     public enum Move
     {
-        HIT, STAY, DEFAULT
+        HIT, STAY, DEFAULT, READY
     }
     
     public Player(String name)
@@ -41,6 +41,7 @@ class Player extends Dealer implements Serializable
     {
         this.hand2 = hand;
     }
+    
     
     public void addCardSecondHand(Card card)
     {
