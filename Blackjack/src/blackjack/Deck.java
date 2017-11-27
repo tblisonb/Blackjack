@@ -47,4 +47,7 @@ public class Deck
     {
         cards.addLast(card);
     }
+    public int getSize(){
+        return cards.size();
+    }
 }

@@ -193,8 +193,6 @@ class HandleSession implements Runnable, BlackjackConstants
                         
                         if(players.get(currentPlayerNum).getMove() == Move.HIT){
                             hit(currentPlayerNum);
-                           
-                            
                         }
                         
                     }
@@ -242,25 +240,26 @@ class HandleSession implements Runnable, BlackjackConstants
         this.toClient = toClient;
         this.fromClient = fromClient;
     }
-public void playGame(List<Player> players) throws IOException, ClassNotFoundException{
+
+    public void playGame(List<Player> players) throws IOException, ClassNotFoundException {
         int current = 0;
         System.out.println("hit");
-       
-    while(true){
-        
-        Object play =  fromClient.get(current).readObject();
-        play.getClass();
-        //Player play1 = (Player) play;
-        System.out.println(play.getClass());
-        //players.set(current, (Player) play);
-        
-    if(players.get(current).getMove() == Move.HIT){
-        hit(current);
-        current++;
-    }
-    
-    }
-    
+
+        while (true) {
+
+            Object play = fromClient.get(current).readObject();
+            play.getClass();
+            //Player play1 = (Player) play;
+            System.out.println(play.getClass());
+            //players.set(current, (Player) play);
+
+            if (players.get(current).getMove() == Move.HIT) {
+                hit(current);
+                current++;
+            }
+
+        }
+
     }
     public void hit(int playerid) throws IOException, ClassNotFoundException
     {
@@ -272,6 +271,7 @@ public void playGame(List<Player> players) throws IOException, ClassNotFoundExce
         if (getValue(players.get(playerid).getFirstHand()) > 21)
         {
                System.out.println("loss test");
+               stay(playerid);
                players.get(playerid).addCredits(-50);
                
         }
@@ -287,6 +287,7 @@ public void playGame(List<Player> players) throws IOException, ClassNotFoundExce
     public void stay(int playerid)
     {
         players.get(playerid).setMove(Move.STAY);
+        players.get(playerid).setState(State.OFF);
     }
     
     public int winner()
@@ -306,7 +307,7 @@ public void playGame(List<Player> players) throws IOException, ClassNotFoundExce
 
     public int getValue(ArrayList<Card> hand)
     {
-        System.out.println("size is: "+hand.size());
+        System.out.println("size is: "+hand.size()+" and deck size is: "+deck.getSize());
         int sum = 0;
         ArrayList<Card> hand2 = new ArrayList();
         hand2 = (ArrayList<Card>) hand.clone();

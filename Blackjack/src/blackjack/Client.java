@@ -41,6 +41,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
     private TextField creditsField, betField;
+    private Text mainCardArea;
     private TextField[] playerFields;
     private Polygon[] turnMarker;
     private String ip;
@@ -203,7 +204,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnStay.setOnAction((ActionEvent event) -> 
         {
             System.out.println("STAY");
-            turnN++;
             updateFields();
         });
         
@@ -216,7 +216,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
         {
            //if(supportedPlayer.getState() == State.)
             try {  
-                cHit();
+                if(supportedPlayer.getState() == State.ON)
+                    cHit();
            } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
@@ -257,7 +258,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         player4Field.setFont(Font.font("Times New Roman"));
         
         //main card area
-        Text mainCardArea = new Text();
+        mainCardArea = new Text();
         mainCardArea.setLayoutX(581);
         mainCardArea.setLayoutY(550);
         mainCardArea.setFont(Font.font("Times New Roman", 180));
@@ -412,6 +413,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
             turnMarker[turnN].setVisible(false);
         
         creditsField.setText(supportedPlayer.getCredits() + "");
+        String cardCode = "";
+        for(Card c: supportedPlayer.getFirstHand()){
+            cardCode += c.toString();
+        }
+        mainCardArea.setText(cardCode);
         System.out.println(turnN);
     }
     
