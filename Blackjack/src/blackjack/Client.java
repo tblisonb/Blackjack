@@ -43,6 +43,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private TextField creditsField, betField;
     private Text mainCardArea;
     private TextField[] playerFields;
+    private Text[] cardArea;
     private Polygon[] turnMarker;
     private String ip;
     private List<Player> players;
@@ -257,11 +258,36 @@ public class Client extends Application implements Runnable, BlackjackConstants
         player4Field.setPrefWidth(96);
         player4Field.setFont(Font.font("Times New Roman"));
         
+        //card area for player1
+        Text cardText1 = new Text();
+        cardText1.setLayoutX(581);
+        cardText1.setLayoutY(550);
+        cardText1.setFont(Font.font("Times New Roman", 90));
+        
+        //card area for player2
+        Text cardText2 = new Text();
+        cardText2.setLayoutX(581);
+        cardText2.setLayoutY(550);
+        cardText2.setFont(Font.font("Times New Roman", 90));
+        
+        //card area for player3
+        Text cardText3 = new Text();
+        cardText3.setLayoutX(581);
+        cardText3.setLayoutY(550);
+        cardText3.setFont(Font.font("Times New Roman", 90));
+        
+        //card area for player4
+        Text cardText4 = new Text();
+        cardText4.setLayoutX(581);
+        cardText4.setLayoutY(550);
+        cardText4.setFont(Font.font("Times New Roman", 90));
+        
+        
         //main card area
         mainCardArea = new Text();
         mainCardArea.setLayoutX(581);
         mainCardArea.setLayoutY(550);
-        mainCardArea.setFont(Font.font("Times New Roman", 180));
+        mainCardArea.setFont(Font.font("Times New Roman", 90));
         mainCardArea.setText("\uD83C\uDCA0");
         
         //current turn indicator
@@ -285,6 +311,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
         playerFields[2] = player3Field;
         playerFields[3] = player4Field;
         
+        cardArea = new Text[4];
+        cardArea[0] = cardText1;
+        cardArea[1] = cardText2;
+        cardArea[2] = cardText3;
+        cardArea[3] = cardText4;
         /*
         fieldPane.getChildren().addAll(btnStay, btnHit);
         grid.getChildren().addAll(betLabel, creditsLabel, betField, creditsField);
@@ -356,8 +387,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
             {
                 toServer.writeObject(supportedPlayer);
                 toServer.flush();
-                
-                
                 while (true)
                 {
                     Player object = (Player)fromServer.readObject();
@@ -379,7 +408,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
                         if (object.getName().equals(supportedPlayer.getName()))
                         {
                             supportedPlayer = object;
-                            supportedPlayer.setState(State.ON);
                         }
                         else
                             players.add(object);
@@ -398,27 +426,32 @@ public class Client extends Application implements Runnable, BlackjackConstants
     
     public void updateFields()
     {
+        String cardCode = "";
         for (int i = 0; i < players.size(); i++)
         {
+            cardCode = "";
             playerFields[i].setText(players.get(i).getName());
             if (players.get(i).getState() == State.ON)
                 turnMarker[i].setVisible(true);
             else
                 turnMarker[i].setVisible(false);
+            for (Card c : players.get(i).getFirstHand()) {
+                cardCode += c.toString();
+            }
+            cardArea[i].setText(cardCode);
+            
         }
         //turnMarker[0].setVisible(true);
         if (supportedPlayer.getState() == State.ON)
-            turnMarker[turnN].setVisible(true);
+            turnMarker[0].setVisible(true);
         else
-            turnMarker[turnN].setVisible(false);
+            turnMarker[0].setVisible(false);
         
         creditsField.setText(supportedPlayer.getCredits() + "");
-        String cardCode = "";
-        for(Card c: supportedPlayer.getFirstHand()){
+        for (Card c : supportedPlayer.getFirstHand()) {
             cardCode += c.toString();
         }
         mainCardArea.setText(cardCode);
-        System.out.println(turnN);
     }
     
     public static void main(String[] args)
