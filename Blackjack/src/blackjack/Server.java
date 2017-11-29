@@ -218,10 +218,8 @@ class HandleSession implements Runnable, BlackjackConstants
             return;
         log.appendText("Current Size of Session: " + players.size() + "\n");
         for (int i = 0; i < players.size(); i++){
-             if(players.get(i).getState() == State.OFF && players.get(i+1) != null){
-             players.get(i+1).setState(State.ON);
-             
-             }
+             //if(players.get(i).getState() == State.OFF && players.get(i+1) != null)
+             //players.get(i+1).setState(State.ON);
             for (int j = 0; j < object.size(); j++){
                
                 try
