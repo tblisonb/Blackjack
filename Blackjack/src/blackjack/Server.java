@@ -151,7 +151,7 @@ class HandleSession implements Runnable, BlackjackConstants
     private final TextArea log;
     private List<ObjectInputStream> fromClient;
     private List<ObjectOutputStream> toClient;
-    private Deck deck = new Deck();
+    public static  Deck deck = new Deck();
     private int currentPlayerNum;
    
     
@@ -170,6 +170,7 @@ class HandleSession implements Runnable, BlackjackConstants
     @Override
     public void run()
     {
+        
         new Thread(() ->
         {
             try
@@ -177,18 +178,14 @@ class HandleSession implements Runnable, BlackjackConstants
                 while (true)
                 {
                     System.out.println("test1");
-                    System.out.println("Deck test1: " + deck.draw().getSuit());
+                    //System.out.println("Deck test1: " + deck.draw().getSuit());
                     Object object = fromClient.get(0).readObject();
                     try
                     {
                         players.set(currentPlayerNum, (Player)object);
                         System.out.println(currentPlayerNum +" is: "+players.get(currentPlayerNum).getState());
                         System.out.println("if size: "+players.get(currentPlayerNum).getFirstHand().size());
-                        if(players.get(currentPlayerNum).getFirstHand().size() <= 0){
-                            
-                            players.get(currentPlayerNum).getFirstHand().add(deck.draw());
-                            players.get(currentPlayerNum).getFirstHand().add(deck.draw());
-                        }
+                       
                         
                         if(players.get(currentPlayerNum).getMove() == Move.HIT){
                             hit(currentPlayerNum);
@@ -198,10 +195,13 @@ class HandleSession implements Runnable, BlackjackConstants
                     {
                         System.err.println(e);
                     }
+                    
                     if(players.get(currentPlayerNum).getState() != State.ON){
                     currentPlayerNum = (++currentPlayerNum) % players.size();
-                        System.out.println(currentPlayerNum);
+                        System.out.println("state off "+currentPlayerNum);
                         players.get(currentPlayerNum).setState(State.ON);
+                        toClient.get(currentPlayerNum).writeObject(players.get(currentPlayerNum));
+                        toClient.get(currentPlayerNum).flush();
                     }
                 }
             }
@@ -217,10 +217,16 @@ class HandleSession implements Runnable, BlackjackConstants
         if (object == null)
             return;
         log.appendText("Current Size of Session: " + players.size() + "\n");
-        for (int i = 0; i < players.size(); i++)
-            for (int j = 0; j < object.size(); j++)
+        for (int i = 0; i < players.size(); i++){
+             if(players.get(i).getState() == State.OFF && players.get(i+1) != null){
+             players.get(i+1).setState(State.ON);
+             
+             }
+            for (int j = 0; j < object.size(); j++){
+               
                 try
                 {
+                    
                     toClient.get(i).writeObject(object.get(j));
                     toClient.get(i).flush();
                 }
@@ -228,10 +234,12 @@ class HandleSession implements Runnable, BlackjackConstants
                 {
                     System.err.println(e);
                 }
-        if(players.size() == 1){
-       // playGame(object);
+            }
+        
         }
-    }
+       
+        }
+    
     
     public void update(List<Player> players, List<ObjectOutputStream> toClient, List<ObjectInputStream> fromClient)
     {
@@ -263,19 +271,20 @@ class HandleSession implements Runnable, BlackjackConstants
     public void hit(int playerid) throws IOException, ClassNotFoundException
     {
         System.out.println("successful hit");
-        players.get(playerid).addCardFirstHand(deck.draw());
+        players.get(playerid).addCardSecondHand(deck.draw());
         
-        System.out.println("draw: "+deck.draw().getSuit());
-        System.out.println("hand value "+getValue(players.get(playerid).getFirstHand()));
-        if (getValue(players.get(playerid).getFirstHand()) > 21)
+        //System.out.println("draw: "+deck.draw().getSuit());
+        System.out.println("hand value "+getValue(players.get(playerid).getSecondHand()));
+        if (getValue(players.get(playerid).getSecondHand()) > 21)
         {
                System.out.println("loss test");
+               
                stay(playerid);
                players.get(playerid).addCredits(-50);
                
         }
         else{
-            //System.out.println("size "+players.get(playerid).getFirstHand().size());
+            System.out.println("size "+players.get(playerid).getSecondHand().size());
             players.get(playerid).setMove(Move.STAY);
             players.get(playerid).addCredits(-50);
             toClient.get(playerid).writeObject(players.get(playerid));
@@ -283,10 +292,12 @@ class HandleSession implements Runnable, BlackjackConstants
         }
     }
     
-    public void stay(int playerid)
+    public void stay(int playerid) throws IOException
     {
         players.get(playerid).setMove(Move.STAY);
         players.get(playerid).setState(State.OFF);
+        toClient.get(playerid).writeObject(players.get(playerid));
+        toClient.get(playerid).flush();
     }
     
     public int winner()
@@ -306,7 +317,7 @@ class HandleSession implements Runnable, BlackjackConstants
 
     public int getValue(ArrayList<Card> hand)
     {
-        System.out.println("size is: "+hand.size()+" and deck size is: "+deck.getSize());
+        
         int sum = 0;
         ArrayList<Card> hand2 = new ArrayList();
         hand2 = (ArrayList<Card>) hand.clone();
@@ -316,7 +327,7 @@ class HandleSession implements Runnable, BlackjackConstants
             // System.out.println("value is: "+hand2.remove(i).getNumber().getValue());
             sum += hand2.remove(i).getNumber().getValue();
         }
-        System.out.println("return success");
+        System.out.println("size is now: "+hand.size()+" and deck size is: "+deck.getSize());
         return sum;
     }
 }

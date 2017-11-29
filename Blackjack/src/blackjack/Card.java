@@ -1,9 +1,11 @@
 package blackjack;
 
+import java.io.Serializable;
+
 /**
  * @author Tanner Lisonbee
  */
-public class Card 
+public class Card implements Serializable
 {
     public enum Suit { HEARTS, SPADES, CLUBS, DIAMONDS }
     public enum Number 

@@ -217,6 +217,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         {
            //if(supportedPlayer.getState() == State.)
             try {  
+                System.out.println("testing");
                 if(supportedPlayer.getState() == State.ON)
                     cHit();
            } catch (IOException ex) {
@@ -380,6 +381,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     @Override
     public void run() 
     {
+       
         players = new LinkedList<>();
         new Thread(() ->
         {
@@ -389,14 +391,25 @@ public class Client extends Application implements Runnable, BlackjackConstants
                 toServer.flush();
                 while (true)
                 {
+                    if(supportedPlayer.getSecondHand().size() <= 0){
+                        supportedPlayer.addCardSecondHand(HandleSession.deck.draw());
+                        supportedPlayer.addCardSecondHand(HandleSession.deck.draw());
+                        
+                    }
+                    System.out.println("client");
                     Player object = (Player)fromServer.readObject();
+                    
                     boolean isSet = false;
                     
                     for (int i = 0; i < players.size(); i++)
                         if (object.getName().equals(supportedPlayer.getName()))
                         {
+                            System.out.println("same object1");
+                            System.out.println("Hand size: "+supportedPlayer.getSecondHand().size());
+                            
                             isSet = true;
                             supportedPlayer = object;
+                            System.out.println("state:" + supportedPlayer.getState());
                         }
                         else if (players.get(i).equals(object))
                         {
@@ -407,13 +420,21 @@ public class Client extends Application implements Runnable, BlackjackConstants
                     if (isSet == false)
                         if (object.getName().equals(supportedPlayer.getName()))
                         {
+                            System.out.println("same object2");
+                            System.out.println("Hand size: "+supportedPlayer.getSecondHand().size());
                             supportedPlayer = object;
+                            System.out.println("state:" + supportedPlayer.getState());
                         }
                         else
                             players.add(object);
                     System.out.println(players.size());
                     
-                    updateFields(); 
+                    updateFields();
+                    
+                    if(players.size() <=0){
+                        System.out.println("on");
+                        supportedPlayer.setState(State.ON);
+                    }
                 }
             }
             catch (IOException | ClassNotFoundException e)
