@@ -177,31 +177,35 @@ class HandleSession implements Runnable, BlackjackConstants
             {
                 while (true)
                 {
-                    System.out.println("test1");
-                    //System.out.println("Deck test1: " + deck.draw().getSuit());
-                    Object object = fromClient.get(0).readObject();
-                    try
-                    {
-                        players.set(currentPlayerNum, (Player)object);
-                        System.out.println(currentPlayerNum +" is: "+players.get(currentPlayerNum).getState());
-                        System.out.println("if size: "+players.get(currentPlayerNum).getFirstHand().size());
-                       
-                        
-                        if(players.get(currentPlayerNum).getMove() == Move.HIT){
-                            hit(currentPlayerNum);
-                        }
+                    Object object = fromClient.get(currentPlayerNum).readObject();
+                    players.set(currentPlayerNum, (Player) object);
+                    //System.out.println(currentPlayerNum + " is: " + players.get(currentPlayerNum).getState());
+
+                    if (players.get(currentPlayerNum).getMove() == Move.HIT) {
+                        hit(currentPlayerNum);
                     }
-                    catch (Exception e)
-                    {
-                        System.err.println(e);
+
+                    System.out.println("List of names:");
+                    for(Player p: players){
+                        System.out.print(p.getName() + " - Cards: ");
+                        for(Card c: p.getSecondHand()){
+                            System.out.print(c.getSuit() + " ");
+                        }
+                        System.out.print(" - " + p.getState());
+                        System.out.println();
                     }
                     
                     if(players.get(currentPlayerNum).getState() != State.ON){
-                    currentPlayerNum = (++currentPlayerNum) % players.size();
-                        System.out.println("state off "+currentPlayerNum);
+                        System.out.println("Currently supported player before update: " + currentPlayerNum);
+                        currentPlayerNum = (++currentPlayerNum) % players.size();
                         players.get(currentPlayerNum).setState(State.ON);
-                        toClient.get(currentPlayerNum).writeObject(players.get(currentPlayerNum));
-                        toClient.get(currentPlayerNum).flush();
+                        System.out.println("Currently supported player after update: " + currentPlayerNum);
+                    }
+                    int counter = 0;
+                    for(Player p: players){
+                        toClient.get(counter).writeObject(players.get(counter));
+                        toClient.get(counter).flush();
+                        counter++;
                     }
                 }
             }
@@ -214,28 +218,26 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void broadcastPlayerData(List<Player> object) throws IOException, ClassNotFoundException
     {
-        if (object == null)
+        if (object == null) {
             return;
+        }
         log.appendText("Current Size of Session: " + players.size() + "\n");
-        for (int i = 0; i < players.size(); i++){
-             //if(players.get(i).getState() == State.OFF && players.get(i+1) != null)
-             //players.get(i+1).setState(State.ON);
-            for (int j = 0; j < object.size(); j++){
-               
-                try
-                {
-                    
+        for (int i = 0; i < players.size(); i++) {
+            //if(players.get(i).getState() == State.OFF && players.get(i+1) != null)
+            //players.get(i+1).setState(State.ON);
+            for (int j = 0; j < object.size(); j++) {
+
+                try {
+
                     toClient.get(i).writeObject(object.get(j));
                     toClient.get(i).flush();
-                }
-                catch (IOException e)
-                {
+                } catch (IOException e) {
                     System.err.println(e);
                 }
             }
-        
+
         }
-       
+
         }
     
     

@@ -484,6 +484,12 @@ public class Client extends Application implements Runnable, BlackjackConstants
             cardCode += c.toString();
         }
         mainCardArea.setText(cardCode);
+        
+        System.out.println("List of names:");
+        for (Player p : players) {
+            System.out.print(p.getName() + " - ");
+        }
+        System.out.println();
     }
     
     public static void main(String[] args)
