@@ -205,7 +205,12 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnStay.setOnAction((ActionEvent event) -> 
         {
             System.out.println("STAY");
-            updateFields();
+            try {  
+                if(supportedPlayer.getState() == State.ON)
+                    cStay();
+            } catch (IOException | ClassNotFoundException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         
         //hit button
@@ -216,15 +221,14 @@ public class Client extends Application implements Runnable, BlackjackConstants
         btnHit.setOnAction((ActionEvent event) -> 
         {
            //if(supportedPlayer.getState() == State.)
+            System.out.println("HIT");
             try {  
                 System.out.println("testing");
                 if(supportedPlayer.getState() == State.ON)
                     cHit();
-           } catch (IOException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-           }
+            }
         });
         
         //player 1
@@ -353,6 +357,13 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         //credits += players.get(0).getCredits();
         //creditsField.setText((credits));
+    }
+    
+    public void cStay() throws IOException, ClassNotFoundException
+    {
+        supportedPlayer.setMove(Move.STAY);
+        toServer.writeObject(supportedPlayer);
+        toServer.flush();
     }
     
     private boolean connectToServer(String ip)
