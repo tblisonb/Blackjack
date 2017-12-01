@@ -41,7 +41,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
     private TextField creditsField, betField;
-    private Text mainCardArea, message;
+    private Text mainCardArea, message, dealerHand;
     private TextField[] playerFields;
     private Text[] cardArea;
     private Polygon[] turnMarker;
@@ -310,6 +310,18 @@ public class Client extends Application implements Runnable, BlackjackConstants
         message.setFont(Font.font("Times New Roman", 16));
         message.setFill(Color.WHITE);
         
+        Text dealer = new Text("Dealer Hand: ");
+        dealer.setLayoutX(560);
+        dealer.setLayoutY(160);
+        dealer.setFont(Font.font("Times New Roman", 24));
+        dealer.setFill(Color.WHITE);
+        
+        dealerHand = new Text();
+        dealerHand.setLayoutX(695);
+        dealerHand.setLayoutY(160);
+        dealerHand.setFont(Font.font("Times New Roman", 24));
+        dealerHand.setFill(Color.WHITE);
+        
         //current turn indicator
         turnMarker = new Polygon[5];
         for (int i = 0; i < 5; i++)
@@ -343,7 +355,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //fieldPane.getChildren().addAll(turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);*/
         root.getChildren().addAll(btnStay, btnHit, betLabel, creditsLabel, betField, creditsField, 
                 player1Field, player2Field, player3Field, player4Field, mainCardArea,
-                cardArea[0], cardArea[1], cardArea[2], cardArea[3],message, 
+                cardArea[0], cardArea[1], cardArea[2], cardArea[3], message, dealer, dealerHand, 
                 turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);
         
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -436,7 +448,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                         {
                            
                             System.out.println("same object1");
-                            System.out.println("Hand size: "+supportedPlayer.getSecondHand().size());
+                            System.out.println("Hand size: "+ supportedPlayer.getSecondHand().size());
                             
                             isSet = true;
                             supportedPlayer = object;
@@ -452,7 +464,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                         if (object.getID() == supportedPlayer.getID())
                         {
                             System.out.println("same object2");
-                            System.out.println("Hand size: "+supportedPlayer.getSecondHand().size());
+                            System.out.println("Hand size: "+ supportedPlayer.getSecondHand().size());
                             supportedPlayer = object;
                             System.out.println("state:" + supportedPlayer.getState());
                         }
@@ -503,8 +515,10 @@ public class Client extends Application implements Runnable, BlackjackConstants
         for (Card c : supportedPlayer.getSecondHand()) {
             cardCode += c.getUnicode();
         }
+        
         mainCardArea.setText(cardCode);
         message.setText(supportedPlayer.getMessage());
+        dealerHand.setText(supportedPlayer.getDealerValue() + "");
         
         System.out.println("List of names:");
         for (Player p : players) {

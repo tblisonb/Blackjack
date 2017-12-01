@@ -263,8 +263,11 @@ class HandleSession implements Runnable, BlackjackConstants
     {
         players.get(playerid).addCardSecondHand(deck.draw());
         
+        Random generate = new Random();
         if (getValue(players.get(playerid).getSecondHand()) > 21)
         {
+            dealer.setHandValue(generate.nextInt(11) + 17);
+            players.get(playerid).setDealerValue(dealer.getHandValue());
             players.get(playerid).setMessage("You busted.");
             lose(playerid);
             for (Card c : players.get(playerid).getSecondHand())
@@ -273,6 +276,8 @@ class HandleSession implements Runnable, BlackjackConstants
         }
         else if (getValue(players.get(playerid).getSecondHand()) == 21)
         {
+            dealer.setHandValue(generate.nextInt(11) + 17);
+            players.get(playerid).setDealerValue(dealer.getHandValue());
             players.get(playerid).setMessage("Blackjack! You win.");
             win(playerid);
             for (Card c : players.get(playerid).getSecondHand())
@@ -286,12 +291,14 @@ class HandleSession implements Runnable, BlackjackConstants
         //System.out.println("draw: "+deck.draw().getSuit());
         //System.out.println("hand value " + getValue(players.get(playerid).getSecondHand()));
         players.get(playerid).setMessage("");
+        players.get(playerid).setDealerValue(0);
     }
     
     public void stay(int playerid) throws IOException
     {
         Random generate = new Random();
-        dealer.setHandValue(generate.nextInt(5) + 20);
+        dealer.setHandValue(generate.nextInt(11) + 17);
+        players.get(playerid).setDealerValue(dealer.getHandValue());
         System.out.println("--------------DEALER HAND VALUE: " + dealer.getHandValue());
         
         if (dealer.getHandValue() > 21)
@@ -312,12 +319,14 @@ class HandleSession implements Runnable, BlackjackConstants
             
         for (Card c : players.get(playerid).getSecondHand())
             deck.returnToDeck(c);
-        players.get(playerid).setSecondHand(new ArrayList<>());
         
+        players.get(playerid).setSecondHand(new ArrayList<>());
         players.get(playerid).setMove(Move.DEFAULT);
         toClient.get(playerid).writeObject(players.get(playerid));
         toClient.get(playerid).flush();
+        
         players.get(playerid).setMessage("");
+        players.get(playerid).setDealerValue(0);
     }
     
     public void win(int playerid)
