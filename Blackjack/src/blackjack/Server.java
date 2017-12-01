@@ -100,7 +100,7 @@ public class Server extends Application implements BlackjackConstants
                             fromClient.add(i, new ObjectInputStream(socket.getInputStream()));
                             
                             Player newPlayer = (Player)fromClient.get(i).readObject();
-                            newPlayer.setPlayerNum(i);
+                            //newPlayer.setPlayerNum(i);
                             players.add(i, newPlayer);
                             System.out.println(players.get(i).getState());
                             
@@ -170,7 +170,6 @@ class HandleSession implements Runnable, BlackjackConstants
     @Override
     public void run()
     {
-        
         new Thread(() ->
         {
             try
@@ -181,15 +180,21 @@ class HandleSession implements Runnable, BlackjackConstants
                     players.set(currentPlayerNum, (Player) object);
                     //System.out.println(currentPlayerNum + " is: " + players.get(currentPlayerNum).getState());
 
-                    if (players.get(currentPlayerNum).getMove() == Move.HIT) {
+                    if (players.get(currentPlayerNum).getMove() == Move.HIT) 
+                    {
                         hit(currentPlayerNum);
+                    }
+                    else if(players.get(currentPlayerNum).getMove() == Move.STAY)
+                    {
+                        stay(currentPlayerNum);
                     }
 
                     System.out.println("List of names:");
-                    for(Player p: players){
+                    for(Player p: players)
+                    {
                         System.out.print(p.getName() + " - Cards: ");
                         for(Card c: p.getSecondHand()){
-                            System.out.print(c.getSuit() + " ");
+                            System.out.print(c.toString() + " ");
                         }
                         System.out.print(" - " + p.getState());
                         System.out.println();
@@ -235,10 +240,8 @@ class HandleSession implements Runnable, BlackjackConstants
                     System.err.println(e);
                 }
             }
-
         }
-
-        }
+    }
     
     
     public void update(List<Player> players, List<ObjectOutputStream> toClient, List<ObjectInputStream> fromClient)
@@ -248,12 +251,13 @@ class HandleSession implements Runnable, BlackjackConstants
         this.fromClient = fromClient;
     }
 
-    public void playGame(List<Player> players) throws IOException, ClassNotFoundException {
+    public void playGame(List<Player> players) throws IOException, ClassNotFoundException 
+    {
         int current = 0;
         System.out.println("hit");
 
-        while (true) {
-
+        while (true) 
+        {
             Object play = fromClient.get(current).readObject();
             play.getClass();
             //Player play1 = (Player) play;
@@ -264,9 +268,7 @@ class HandleSession implements Runnable, BlackjackConstants
                 hit(current);
                 current++;
             }
-
         }
-
     }
     public void hit(int playerid) throws IOException, ClassNotFoundException
     {
@@ -283,7 +285,8 @@ class HandleSession implements Runnable, BlackjackConstants
                players.get(playerid).addCredits(-50);
                
         }
-        else{
+        else
+        {
             System.out.println("size "+players.get(playerid).getSecondHand().size());
             players.get(playerid).setMove(Move.STAY);
             players.get(playerid).addCredits(-50);
@@ -294,7 +297,7 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void stay(int playerid) throws IOException
     {
-        players.get(playerid).setMove(Move.STAY);
+        players.get(playerid).setMove(Move.DEFAULT);
         players.get(playerid).setState(State.OFF);
         toClient.get(playerid).writeObject(players.get(playerid));
         toClient.get(playerid).flush();

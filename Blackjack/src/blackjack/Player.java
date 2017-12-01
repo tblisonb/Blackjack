@@ -10,7 +10,8 @@ class Player extends Dealer implements Serializable
     private State state;
     private Move move;
     private final String name;
-    private int playerNum;
+    //private int playerNum;
+    private long ID;
     
     public enum State 
     { 
@@ -29,7 +30,8 @@ class Player extends Dealer implements Serializable
         this.name = name;
         this.state = State.OFF;
         this.move = Move.DEFAULT;
-        this.playerNum = -1;
+        //this.playerNum = -1;
+        ID = System.currentTimeMillis();
     }
     
     public ArrayList<Card> getSecondHand()
@@ -72,7 +74,7 @@ class Player extends Dealer implements Serializable
     {
         return name;
     }
-    
+    /*
     public void setPlayerNum(int num)
     {
         this.playerNum = num;
@@ -82,7 +84,7 @@ class Player extends Dealer implements Serializable
     {
         return playerNum;
     }
-
+*/
     public void setMove(Move move) 
     {
         this.move = move;
@@ -91,5 +93,10 @@ class Player extends Dealer implements Serializable
     public Move getMove() 
     {
         return move;
+    }
+    
+    public long getID()
+    {
+        return ID;
     }
 }

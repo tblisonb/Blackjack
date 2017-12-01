@@ -265,35 +265,44 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         //card area for player1
         Text cardText1 = new Text();
-        cardText1.setLayoutX(581);
-        cardText1.setLayoutY(550);
-        cardText1.setFont(Font.font("Times New Roman", 90));
+        cardText1.setLayoutX(170);
+        cardText1.setLayoutY(490);
+        cardText1.setFont(Font.font("Times New Roman", 51));
+        cardText1.setFill(Color.web("#FFD000"));
+        cardText1.setWrappingWidth(70);
         
         //card area for player2
         Text cardText2 = new Text();
-        cardText2.setLayoutX(581);
-        cardText2.setLayoutY(550);
-        cardText2.setFont(Font.font("Times New Roman", 90));
+        cardText2.setLayoutX(289);
+        cardText2.setLayoutY(490);
+        cardText2.setFont(Font.font("Times New Roman", 51));
+        cardText2.setFill(Color.web("#FFD000"));
+        cardText2.setWrappingWidth(70);
         
         //card area for player3
         Text cardText3 = new Text();
-        cardText3.setLayoutX(581);
-        cardText3.setLayoutY(550);
-        cardText3.setFont(Font.font("Times New Roman", 90));
+        cardText3.setLayoutX(920);
+        cardText3.setLayoutY(490);
+        cardText3.setFont(Font.font("Times New Roman", 51));
+        cardText3.setFill(Color.web("#FFD000"));
+        cardText3.setWrappingWidth(70);
         
         //card area for player4
         Text cardText4 = new Text();
-        cardText4.setLayoutX(581);
-        cardText4.setLayoutY(550);
-        cardText4.setFont(Font.font("Times New Roman", 90));
-        
+        cardText4.setLayoutX(1039);
+        cardText4.setLayoutY(490);
+        cardText4.setFont(Font.font("Times New Roman", 51));
+        cardText4.setFill(Color.web("#FFD000"));
+        cardText4.setWrappingWidth(70);
         
         //main card area
         mainCardArea = new Text();
-        mainCardArea.setLayoutX(581);
-        mainCardArea.setLayoutY(550);
-        mainCardArea.setFont(Font.font("Times New Roman", 90));
+        mainCardArea.setLayoutX(582);
+        mainCardArea.setLayoutY(494);
+        mainCardArea.setFont(Font.font("Times New Roman", 88));
         mainCardArea.setText("\uD83C\uDCA0");
+        mainCardArea.setFill(Color.web("#FFD000"));
+        mainCardArea.setWrappingWidth(117);
         
         //current turn indicator
         turnMarker = new Polygon[5];
@@ -410,7 +419,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                     boolean isSet = false;
                     
                     for (int i = 0; i < players.size(); i++)
-                        if (object.getName().equals(supportedPlayer.getName()))
+                        if (object.getID() == supportedPlayer.getID())
                         {
                             System.out.println("same object1");
                             System.out.println("Hand size: "+supportedPlayer.getSecondHand().size());
@@ -419,14 +428,14 @@ public class Client extends Application implements Runnable, BlackjackConstants
                             supportedPlayer = object;
                             System.out.println("state:" + supportedPlayer.getState());
                         }
-                        else if (players.get(i).equals(object))
+                        else if (players.get(i).getID() == object.getID())
                         {
                             isSet = true;
                             players.set(i, object);
                         }
                                
                     if (isSet == false)
-                        if (object.getName().equals(supportedPlayer.getName()))
+                        if (object.getID() == supportedPlayer.getID())
                         {
                             System.out.println("same object2");
                             System.out.println("Hand size: "+supportedPlayer.getSecondHand().size());
@@ -435,7 +444,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                         }
                         else
                             players.add(object);
-                    System.out.println(players.size());
+                    //System.out.println(players.size());
                     
                     updateFields();
                     
@@ -468,7 +477,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
                 cardCode += c.getUnicode();
             }
             cardArea[i].setText(cardCode);
-            
         }
         //turnMarker[0].setVisible(true);
         if (supportedPlayer.getState() == State.ON)

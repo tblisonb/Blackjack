@@ -66,4 +66,10 @@ public class Card implements Serializable
     {
         return unicode;
     }
+    
+    @Override
+    public String toString()
+    {
+        return number + " of " + suit;
+    }
 }
