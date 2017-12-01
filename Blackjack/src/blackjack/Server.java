@@ -200,6 +200,7 @@ class HandleSession implements Runnable, BlackjackConstants
                             System.out.println();
                         }
                     }
+                    System.out.println("broadcasting in loop");
                     broadcastPlayerData(players);
                 }
             }

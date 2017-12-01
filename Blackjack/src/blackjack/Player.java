@@ -30,7 +30,7 @@ class Player extends Dealer implements Serializable
         this.credits = 500;
         this.currentBet = 0;
         this.name = name;
-        this.state = State.OFF;
+        this.state = State.ON;
         this.move = Move.DEFAULT;
         //this.playerNum = -1;
         ID = System.currentTimeMillis();

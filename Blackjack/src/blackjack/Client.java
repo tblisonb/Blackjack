@@ -430,9 +430,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
                     
                     boolean isSet = false;
                     
-                    for (int i = 0; i < players.size(); i++)
+                    for (int i = 0; i < players.size(); i++){
+                        System.out.println("Object id: "+object.getID() + " supportedPlayerId:" + supportedPlayer.getID());
                         if (object.getID() == supportedPlayer.getID())
                         {
+                           
                             System.out.println("same object1");
                             System.out.println("Hand size: "+supportedPlayer.getSecondHand().size());
                             
@@ -440,12 +442,12 @@ public class Client extends Application implements Runnable, BlackjackConstants
                             supportedPlayer = object;
                             System.out.println("state:" + supportedPlayer.getState());
                         }
-                        else if (players.get(i).getID() == object.getID())
+                            else if (players.get(i).getID() == object.getID())
                         {
                             isSet = true;
                             players.set(i, object);
                         }
-                               
+                    }          
                     if (isSet == false)
                         if (object.getID() == supportedPlayer.getID())
                         {
@@ -464,6 +466,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                         System.out.println("on");
                         supportedPlayer.setState(State.ON);
                     }
+                    
                 }
             }
             catch (IOException | ClassNotFoundException e)
