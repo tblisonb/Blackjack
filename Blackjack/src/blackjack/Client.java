@@ -351,17 +351,20 @@ public class Client extends Application implements Runnable, BlackjackConstants
     public void cHit() throws IOException, ClassNotFoundException
     {
         supportedPlayer.setMove(Move.HIT);
+        if (betField.getText().isEmpty())
+            betField.setText("0");
+        supportedPlayer.setBet(Integer.parseInt(betField.getText()));
         
         toServer.writeObject(supportedPlayer);
         toServer.flush();
         
-        System.out.println("cHit");
+        //System.out.println("cHit");
         //Object play = fromServer.readObject();
         //Player pl = (Player) play;
         //players.set(0, pl);
         //System.out.println("cHit2");
         
-        String credits = "";
+        //String credits = "";
         
         //credits += players.get(0).getCredits();
         //creditsField.setText((credits));
@@ -370,6 +373,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
     public void cStay() throws IOException, ClassNotFoundException
     {
         supportedPlayer.setMove(Move.STAY);
+        if (betField.getText().isEmpty())
+            betField.setText("0");
         toServer.writeObject(supportedPlayer);
         toServer.flush();
     }

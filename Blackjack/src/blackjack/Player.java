@@ -6,7 +6,7 @@ import java.util.ArrayList;
 class Player extends Dealer implements Serializable
 {
     private ArrayList<Card> hand2;
-    private int credits;
+    private int credits, currentBet;
     private State state;
     private Move move;
     private final String name;
@@ -20,13 +20,14 @@ class Player extends Dealer implements Serializable
     
     public enum Move
     {
-        HIT, STAY, DEFAULT, READY
+        HIT, STAY, DEFAULT
     }
     
     public Player(String name)
     {
         this.hand2 = new ArrayList<>();
         this.credits = 500;
+        this.currentBet = 0;
         this.name = name;
         this.state = State.OFF;
         this.move = Move.DEFAULT;
@@ -43,7 +44,6 @@ class Player extends Dealer implements Serializable
     {
         this.hand2 = hand;
     }
-    
     
     public void addCardSecondHand(Card card)
     {
@@ -98,5 +98,15 @@ class Player extends Dealer implements Serializable
     public long getID()
     {
         return ID;
+    }
+    
+    public void setBet(int amount)
+    {
+        this.currentBet = amount;
+    }
+    
+    public int getBet()
+    {
+        return currentBet;
     }
 }

@@ -137,7 +137,6 @@ public class Server extends Application implements BlackjackConstants
     {
         launch(args);
     }
-    
 }
 
 /**
@@ -151,8 +150,9 @@ class HandleSession implements Runnable, BlackjackConstants
     private final TextArea log;
     private List<ObjectInputStream> fromClient;
     private List<ObjectOutputStream> toClient;
-    public static  Deck deck = new Deck();
+    public static Deck deck = new Deck();
     private int currentPlayerNum;
+    private Dealer dealer;
    
     
     /**
@@ -165,6 +165,7 @@ class HandleSession implements Runnable, BlackjackConstants
         this.currentPlayerNum = 0;
         this.sessionNum = sessionNum;
         this.log = log;
+        this.dealer = new Dealer();
     }
 
     @Override
@@ -180,38 +181,25 @@ class HandleSession implements Runnable, BlackjackConstants
                     players.set(currentPlayerNum, (Player) object);
                     //System.out.println(currentPlayerNum + " is: " + players.get(currentPlayerNum).getState());
 
-                    if (players.get(currentPlayerNum).getMove() == Move.HIT) 
+                    if (players.get(currentPlayerNum).getMove() != Move.DEFAULT)
                     {
-                        hit(currentPlayerNum);
-                    }
-                    else if(players.get(currentPlayerNum).getMove() == Move.STAY)
-                    {
-                        stay(currentPlayerNum);
-                    }
+                        if (players.get(currentPlayerNum).getMove() == Move.HIT) 
+                            hit(currentPlayerNum);
+                        else if(players.get(currentPlayerNum).getMove() == Move.STAY)
+                            stay(currentPlayerNum);       
 
-                    System.out.println("List of names:");
-                    for(Player p: players)
-                    {
-                        System.out.print(p.getName() + " - Cards: ");
-                        for(Card c: p.getSecondHand()){
-                            System.out.print(c.toString() + " ");
+                        System.out.println("List of names:");
+                        for(Player p: players)
+                        {
+                            System.out.print(p.getName() + " - Cards: ");
+                            for(Card c: p.getSecondHand()){
+                                System.out.print(c.toString() + " ");
+                            }
+                            System.out.print(" - " + p.getState());
+                            System.out.println();
                         }
-                        System.out.print(" - " + p.getState());
-                        System.out.println();
                     }
-                    
-                    if(players.get(currentPlayerNum).getState() != State.ON){
-                        System.out.println("Currently supported player before update: " + currentPlayerNum);
-                        currentPlayerNum = (++currentPlayerNum) % players.size();
-                        players.get(currentPlayerNum).setState(State.ON);
-                        System.out.println("Currently supported player after update: " + currentPlayerNum);
-                    }
-                    int counter = 0;
-                    for(Player p: players){
-                        toClient.get(counter).writeObject(players.get(counter));
-                        toClient.get(counter).flush();
-                        counter++;
-                    }
+                    broadcastPlayerData(players);
                 }
             }
             catch (IOException | ClassNotFoundException e)
@@ -243,7 +231,6 @@ class HandleSession implements Runnable, BlackjackConstants
         }
     }
     
-    
     public void update(List<Player> players, List<ObjectOutputStream> toClient, List<ObjectInputStream> fromClient)
     {
         this.players = players;
@@ -270,67 +257,95 @@ class HandleSession implements Runnable, BlackjackConstants
             }
         }
     }
+    
     public void hit(int playerid) throws IOException, ClassNotFoundException
     {
-        System.out.println("successful hit");
         players.get(playerid).addCardSecondHand(deck.draw());
         
-        //System.out.println("draw: "+deck.draw().getSuit());
-        System.out.println("hand value "+getValue(players.get(playerid).getSecondHand()));
         if (getValue(players.get(playerid).getSecondHand()) > 21)
         {
-               System.out.println("loss test");
-               
-               stay(playerid);
-               players.get(playerid).addCredits(-50);
-               
+            lose(playerid);
+            for (Card c : players.get(playerid).getSecondHand())
+                deck.returnToDeck(c);
+            players.get(playerid).setSecondHand(new ArrayList<>());
         }
-        else
+        else if (getValue(players.get(playerid).getSecondHand()) == 21)
         {
-            System.out.println("size "+players.get(playerid).getSecondHand().size());
-            players.get(playerid).setMove(Move.STAY);
-            players.get(playerid).addCredits(-50);
-            toClient.get(playerid).writeObject(players.get(playerid));
-            toClient.get(playerid).flush();
+            win(playerid);
+            for (Card c : players.get(playerid).getSecondHand())
+                deck.returnToDeck(c);
+            players.get(playerid).setSecondHand(new ArrayList<>());
         }
+        
+        players.get(playerid).setMove(Move.DEFAULT);
+        toClient.get(playerid).writeObject(players.get(playerid));
+        toClient.get(playerid).flush();
+        //System.out.println("draw: "+deck.draw().getSuit());
+        //System.out.println("hand value " + getValue(players.get(playerid).getSecondHand()));
     }
     
     public void stay(int playerid) throws IOException
     {
+        fillDealerHand();
+        if (getValue(players.get(playerid).getSecondHand()) > getValue(dealer.getFirstHand()))
+            win(playerid);
+        else if (getValue(players.get(playerid).getSecondHand()) > getValue(dealer.getFirstHand()))
+            lose(playerid);
+            
         players.get(playerid).setMove(Move.DEFAULT);
         players.get(playerid).setState(State.OFF);
         toClient.get(playerid).writeObject(players.get(playerid));
         toClient.get(playerid).flush();
     }
     
-    public int winner()
+    public void win(int playerid)
     {
-        int winner  = getValue(players.get(0).getFirstHand());
+        players.get(playerid).addCredits(players.get(playerid).getBet());
+        advancePlayer();
+        /*int winner  = getValue(players.get(0).getSecondHand());
         int index = 0;
         Player play;
         for(int i =0; i < players.size(); i++)
         {
-            if(getValue(players.get(i).getFirstHand()) > winner)
-                winner = getValue(players.get(i).getFirstHand());
+            if(getValue(players.get(i).getSecondHand()) > winner)
+                winner = getValue(players.get(i).getSecondHand());
             index = 0;
         }
         players.get(index).addCredits(index);
-        return index;
+        return index;*/
+    }
+    
+    public void lose(int playerid)
+    {
+        players.get(playerid).addCredits(-(players.get(playerid).getBet()));
+        advancePlayer();
+    }
+    
+    private void advancePlayer()
+    {
+        players.get(currentPlayerNum).setState(State.OFF);
+        currentPlayerNum = (++currentPlayerNum) % players.size();
+        players.get(currentPlayerNum).setState(State.ON);
     }
 
-    public int getValue(ArrayList<Card> hand)
+    private int getValue(ArrayList<Card> hand)
     {
-        
         int sum = 0;
-        ArrayList<Card> hand2 = new ArrayList();
-        hand2 = (ArrayList<Card>) hand.clone();
-        int i  =0;
-        while(hand2.size() > 0)
-        {
-            // System.out.println("value is: "+hand2.remove(i).getNumber().getValue());
-            sum += hand2.remove(i).getNumber().getValue();
-        }
-        System.out.println("size is now: "+hand.size()+" and deck size is: "+deck.getSize());
+        for (Card c : hand)
+            sum += c.getNumber().getValue();
         return sum;
+    }
+    
+    public void fillDealerHand()
+    {
+        do
+            dealer.addCardFirstHand(deck.draw());
+        while (getValue(dealer.getFirstHand()) < 17);
+    }
+    
+    public void returnDealerHand()
+    {
+        for (Card c : dealer.getFirstHand())
+            deck.returnToDeck(c);
     }
 }
