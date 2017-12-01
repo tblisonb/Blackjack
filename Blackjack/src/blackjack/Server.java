@@ -286,15 +286,14 @@ class HandleSession implements Runnable, BlackjackConstants
         }
         
         players.get(playerid).setMove(Move.DEFAULT);
-        toClient.get(playerid).writeObject(players.get(playerid));
-        toClient.get(playerid).flush();
+        broadcastPlayerData(players);
         //System.out.println("draw: "+deck.draw().getSuit());
         //System.out.println("hand value " + getValue(players.get(playerid).getSecondHand()));
         players.get(playerid).setMessage("");
         players.get(playerid).setDealerValue(0);
     }
     
-    public void stay(int playerid) throws IOException
+    public void stay(int playerid) throws IOException, ClassNotFoundException
     {
         Random generate = new Random();
         dealer.setHandValue(generate.nextInt(11) + 17);
@@ -322,8 +321,7 @@ class HandleSession implements Runnable, BlackjackConstants
         
         players.get(playerid).setSecondHand(new ArrayList<>());
         players.get(playerid).setMove(Move.DEFAULT);
-        toClient.get(playerid).writeObject(players.get(playerid));
-        toClient.get(playerid).flush();
+        broadcastPlayerData(players);
         
         players.get(playerid).setMessage("");
         players.get(playerid).setDealerValue(0);
