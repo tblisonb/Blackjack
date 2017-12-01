@@ -82,8 +82,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
         GridPane.setConstraints(ipLabel, 0, 1);
         GridPane.setConstraints(ipInput, 1, 1);
 
-        
-        //Chedder
         //Username
         Label usernameLabel = new Label("Username: ");
         TextField usernameInput = new TextField();
