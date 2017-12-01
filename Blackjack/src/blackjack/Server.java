@@ -238,26 +238,6 @@ class HandleSession implements Runnable, BlackjackConstants
         this.toClient = toClient;
         this.fromClient = fromClient;
     }
-
-    public void playGame(List<Player> players) throws IOException, ClassNotFoundException 
-    {
-        int current = 0;
-        System.out.println("hit");
-
-        while (true) 
-        {
-            Object play = fromClient.get(current).readObject();
-            play.getClass();
-            //Player play1 = (Player) play;
-            System.out.println(play.getClass());
-            //players.set(current, (Player) play);
-
-            if (players.get(current).getMove() == Move.HIT) {
-                hit(current);
-                current++;
-            }
-        }
-    }
     
     public void hit(int playerid) throws IOException, ClassNotFoundException
     {
