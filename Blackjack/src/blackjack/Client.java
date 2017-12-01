@@ -341,7 +341,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
     
     public void cHit() throws IOException, ClassNotFoundException
     {
-        
         supportedPlayer.setMove(Move.HIT);
         
         toServer.writeObject(supportedPlayer);
@@ -351,7 +350,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //Object play = fromServer.readObject();
         //Player pl = (Player) play;
         //players.set(0, pl);
-        System.out.println("cHit2");
+        //System.out.println("cHit2");
         
         String credits = "";
         
@@ -392,7 +391,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
     @Override
     public void run() 
     {
-       
         players = new LinkedList<>();
         new Thread(() ->
         {
@@ -402,12 +400,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
                 toServer.flush();
                 while (true)
                 {
-                    if(supportedPlayer.getSecondHand().size() <= 0){
+                    if(supportedPlayer.getSecondHand().size() <= 0)
+                    {
                         supportedPlayer.addCardSecondHand(HandleSession.deck.draw());
                         supportedPlayer.addCardSecondHand(HandleSession.deck.draw());
-                        
                     }
-                    System.out.println("client");
                     Player object = (Player)fromServer.readObject();
                     
                     boolean isSet = false;
@@ -467,8 +464,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
                 turnMarker[i].setVisible(true);
             else
                 turnMarker[i].setVisible(false);
-            for (Card c : players.get(i).getFirstHand()) {
-                cardCode += c.toString();
+            for (Card c : players.get(i).getSecondHand()) {
+                cardCode += c.getUnicode();
             }
             cardArea[i].setText(cardCode);
             
@@ -480,8 +477,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
             turnMarker[0].setVisible(false);
         
         creditsField.setText(supportedPlayer.getCredits() + "");
-        for (Card c : supportedPlayer.getFirstHand()) {
-            cardCode += c.toString();
+        for (Card c : supportedPlayer.getSecondHand()) {
+            cardCode += c.getUnicode();
         }
         mainCardArea.setText(cardCode);
         

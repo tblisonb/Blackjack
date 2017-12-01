@@ -49,7 +49,7 @@ public class Card implements Serializable
                 break;
         }
         unicodeRep += number.value;
-        String unicode = "\uD83C" + unicodeRep;
+        this.unicode = "\uD83C" + unicodeRep;
     }
 
     public Suit getSuit() 
@@ -62,7 +62,8 @@ public class Card implements Serializable
         return number;
     }
     
-    public String toString(){
+    public String getUnicode()
+    {
         return unicode;
     }
 }
