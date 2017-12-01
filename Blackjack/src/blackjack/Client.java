@@ -211,6 +211,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
+            updateFields();
         });
         
         //hit button
@@ -229,6 +230,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
+            updateFields();
         });
         
         //player 1
@@ -361,7 +363,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         if (betField.getText().isEmpty())
             betField.setText("0");
         supportedPlayer.setBet(Integer.parseInt(betField.getText()));
-        
+        updateFields();
         toServer.writeObject(supportedPlayer);
         toServer.flush();
         
@@ -382,6 +384,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         supportedPlayer.setMove(Move.STAY);
         if (betField.getText().isEmpty())
             betField.setText("0");
+        updateFields();
         toServer.writeObject(supportedPlayer);
         toServer.flush();
     }
@@ -429,9 +432,8 @@ public class Client extends Application implements Runnable, BlackjackConstants
                     Player object = (Player)fromServer.readObject();
                     
                     boolean isSet = false;
-                    
-                    for (int i = 0; i < players.size(); i++){
-                        System.out.println("Object id: "+object.getID() + " supportedPlayerId:" + supportedPlayer.getID());
+                    updateFields();
+                    for (int i = 0; i < players.size(); i++)
                         if (object.getID() == supportedPlayer.getID())
                         {
                            
@@ -442,12 +444,13 @@ public class Client extends Application implements Runnable, BlackjackConstants
                             supportedPlayer = object;
                             System.out.println("state:" + supportedPlayer.getState());
                         }
-                            else if (players.get(i).getID() == object.getID())
+                        
+                        else if (players.get(i).getID() == object.getID())
                         {
                             isSet = true;
                             players.set(i, object);
                         }
-                    }          
+                               updateFields();
                     if (isSet == false)
                         if (object.getID() == supportedPlayer.getID())
                         {
@@ -466,7 +469,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
                         System.out.println("on");
                         supportedPlayer.setState(State.ON);
                     }
-                    
                 }
             }
             catch (IOException | ClassNotFoundException e)
