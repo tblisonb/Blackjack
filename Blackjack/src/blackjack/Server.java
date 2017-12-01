@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -214,7 +215,6 @@ class HandleSession implements Runnable, BlackjackConstants
         if (object == null) {
             return;
         }
-        log.appendText("Current Size of Session: " + players.size() + "\n");
         for (int i = 0; i < players.size(); i++) {
             //if(players.get(i).getState() == State.OFF && players.get(i+1) != null)
             //players.get(i+1).setState(State.ON);
@@ -286,14 +286,22 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void stay(int playerid) throws IOException
     {
-        fillDealerHand();
-        if (getValue(players.get(playerid).getSecondHand()) > getValue(dealer.getFirstHand()))
+        Random generate = new Random();
+        dealer.setHandValue(generate.nextInt(5) + 20);
+        System.out.println("--------------DEALER HAND VALUE: " + dealer.getHandValue());
+        
+        if (dealer.getHandValue() > 21)
             win(playerid);
-        else if (getValue(players.get(playerid).getSecondHand()) > getValue(dealer.getFirstHand()))
+        else if (getValue(players.get(playerid).getSecondHand()) > dealer.getHandValue())
+            win(playerid);
+        else if (getValue(players.get(playerid).getSecondHand()) < dealer.getHandValue())
             lose(playerid);
             
+        for (Card c : players.get(playerid).getSecondHand())
+            deck.returnToDeck(c);
+        players.get(playerid).setSecondHand(new ArrayList<>());
+        
         players.get(playerid).setMove(Move.DEFAULT);
-        players.get(playerid).setState(State.OFF);
         toClient.get(playerid).writeObject(players.get(playerid));
         toClient.get(playerid).flush();
     }
@@ -334,18 +342,5 @@ class HandleSession implements Runnable, BlackjackConstants
         for (Card c : hand)
             sum += c.getNumber().getValue();
         return sum;
-    }
-    
-    public void fillDealerHand()
-    {
-        do
-            dealer.addCardFirstHand(deck.draw());
-        while (getValue(dealer.getFirstHand()) < 17);
-    }
-    
-    public void returnDealerHand()
-    {
-        for (Card c : dealer.getFirstHand())
-            deck.returnToDeck(c);
     }
 }

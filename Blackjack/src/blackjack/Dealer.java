@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Dealer 
 {
     private ArrayList<Card> hand1;
+    private int handValue;
     
     public Dealer()
     {
@@ -27,5 +28,15 @@ public class Dealer
     public void addCardFirstHand(Card card)
     {
         this.hand1.add(card);
+    }
+    
+    public void setHandValue(int value)
+    {
+        this.handValue = value;
+    }
+    
+    public int getHandValue()
+    {
+        return handValue;
     }
 }
