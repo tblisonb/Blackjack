@@ -1,5 +1,6 @@
 package blackjack;
 
+import static blackjack.BlackjackConstants.BACKGROUND2;
 import blackjack.Player.Move;
 import blackjack.Player.State;
 import java.io.IOException;
@@ -19,6 +20,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -30,6 +33,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -74,7 +78,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
 
         //IP Address
         Label ipLabel = new Label("IP Address: ");
-        TextField ipInput = new TextField();
+        TextField ipInput = new TextField("localhost");
         GridPane.setConstraints(ipLabel, 0, 1);
         GridPane.setConstraints(ipInput, 1, 1);
 
@@ -233,21 +237,156 @@ public class Client extends Application implements Runnable, BlackjackConstants
             }
         });
         
+         playerFields = new TextField[4];
         //player 1
-        TextField player1Field = new TextField();
-        player1Field.setLayoutX(157);
-        player1Field.setLayoutY(550);
-        player1Field.setEditable(false);
-        player1Field.setPrefWidth(96);
-        player1Field.setFont(Font.font("Times New Roman"));
-        
+            TextField player1Field = new TextField();
         //player 2
-        TextField player2Field = new TextField();
-        player2Field.setLayoutX(276);
-        player2Field.setLayoutY(550);
-        player2Field.setEditable(false);
-        player2Field.setPrefWidth(96);
-        player2Field.setFont(Font.font("Times New Roman"));
+            TextField player2Field = new TextField();
+        
+        Button btnChair1 = new Button("Chair 1");
+        btnChair1.setLayoutX(605);
+        btnChair1.setLayoutY(535);
+        btnChair1.setFont(Font.font("Times New Roman", 16));
+        btnChair1.setOnAction((ActionEvent event) -> 
+        {
+            //Places the selected Avatar
+            root.getChildren().remove(btnChair1);
+            String avatar = display("Avatar Selection Screen", "");
+            Image image = new Image(avatar);
+            ImageView player1 = new ImageView();
+            ImageView boxPlacement = new ImageView();
+            player1.setImage(image);
+            player1.setX(500);
+            player1.setY(500);
+            root.getChildren().add(player1);
+            
+            //Box filled with info
+            Image box = new Image("images/BoxMan.png");
+            boxPlacement.setImage(box);
+            boxPlacement.setX(605);
+            boxPlacement.setY(540);
+            root.getChildren().add(boxPlacement);
+            
+            //NameTag
+            player1Field.setLayoutX(615);
+            player1Field.setLayoutY(550);
+            player1Field.setEditable(false);
+            player1Field.setPrefWidth(96);
+            player1Field.setFont(Font.font("Times New Roman"));
+            root.getChildren().add(player1Field);
+            
+            playerFields[1] = player1Field;
+                    
+           });
+
+        
+        Button btnChair2 = new Button("Chair 2");
+        btnChair2.setLayoutX(80);
+        btnChair2.setLayoutY(400);
+        btnChair2.setFont(Font.font("Times New Roman", 16));
+        btnChair2.setOnAction((ActionEvent event) -> 
+        {
+            //Places the selected Avatar
+            root.getChildren().remove(btnChair2);
+            String avatar = display("Avatar Selection Screen", "");
+            ImageView boxPlacement2 = new ImageView();
+            Image image = new Image(avatar);
+            ImageView player2 = new ImageView();
+            player2.setImage(image);
+            player2.setLayoutX(80);
+            player2.setLayoutY(400);
+            root.getChildren().add(player2);
+            
+            //Box filled with info
+            Image box = new Image("images/BoxMan.png");
+            boxPlacement2.setImage(box);
+            boxPlacement2.setX(182);
+            boxPlacement2.setY(450);
+            root.getChildren().add(boxPlacement2);
+            
+            //NameTag
+            player2Field.setLayoutX(192);
+            player2Field.setLayoutY(460);
+            player2Field.setEditable(false);
+            player2Field.setPrefWidth(96);
+            player2Field.setFont(Font.font("Times New Roman"));
+            root.getChildren().add(player2Field);
+            
+            playerFields[2] = player2Field;
+            
+        });
+        
+        Button btnChair3 = new Button("Chair 3");
+        btnChair3.setLayoutX(80);
+        btnChair3.setLayoutY(190);
+        btnChair3.setFont(Font.font("Times New Roman", 16));
+        btnChair3.setOnAction((ActionEvent event) -> 
+        {
+            root.getChildren().remove(btnChair3);
+            String avatar = display("Avatar Selection Screen", "");
+            ImageView boxPlacement3 = new ImageView();
+            Image image = new Image(avatar);
+            ImageView player3 = new ImageView();
+            player3.setLayoutX(80);
+            player3.setLayoutY(100);
+            player3.setImage(image);
+            root.getChildren().add(player3);
+            
+            //Box filled with info
+            Image box = new Image("images/BoxMan.png");
+            boxPlacement3.setImage(box);
+            boxPlacement3.setX(183);
+            boxPlacement3.setY(100);
+            root.getChildren().add(boxPlacement3);
+        });
+        
+        Button btnChair4 = new Button("Chair 4");
+        btnChair4.setLayoutX(1155);
+        btnChair4.setLayoutY(190);
+        btnChair4.setFont(Font.font("Times New Roman", 16));
+        btnChair4.setOnAction((ActionEvent event) -> 
+        {
+            root.getChildren().remove(btnChair4);
+            String avatar = display("Avatar Selection Screen", "");
+            ImageView boxPlacement4 = new ImageView();
+            Image image = new Image(avatar);
+            ImageView player4 = new ImageView();
+            player4.setLayoutX(1120);
+            player4.setLayoutY(100);
+            player4.setImage(image);
+            root.getChildren().add(player4);
+            
+            //Box filled with info
+            Image box = new Image("images/BoxMan.png");
+            boxPlacement4.setImage(box);
+            boxPlacement4.setX(979);
+            boxPlacement4.setY(100);
+            root.getChildren().add(boxPlacement4);
+        });
+        
+        Button btnChair5 = new Button("Chair 5");
+        btnChair5.setLayoutX(1155);
+        btnChair5.setLayoutY(400);
+        btnChair5.setFont(Font.font("Times New Roman", 16));
+        btnChair5.setOnAction((ActionEvent event) -> 
+        {
+            root.getChildren().remove(btnChair5);
+            String avatar = display("Avatar Selection Screen", "");
+            ImageView boxPlacement5 = new ImageView();
+            Image image = new Image(avatar);
+            ImageView player5 = new ImageView();
+            player5.setLayoutX(1120);
+            player5.setLayoutY(400);
+            player5.setImage(image);
+            root.getChildren().add(player5);
+            
+            //Box filled with info
+            Image box = new Image("images/BoxMan.png");
+            boxPlacement5.setImage(box);
+            boxPlacement5.setX(979);
+            boxPlacement5.setY(460);
+            root.getChildren().add(boxPlacement5);
+        });
         
         //player 3
         TextField player3Field = new TextField();
@@ -343,7 +482,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         grid.getChildren().addAll(betLabel, creditsLabel, betField, creditsField);
         fieldPane.getChildren().addAll(player1Field, player2Field, player3Field, player4Field, mainCardArea);
         //fieldPane.getChildren().addAll(turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);*/
-        root.getChildren().addAll(btnStay, btnHit, betLabel, creditsLabel, betField, creditsField, 
+        root.getChildren().addAll(btnStay, btnHit, betLabel, creditsLabel, betField, creditsField, btnChair1, btnChair2, btnChair3, btnChair4, btnChair5,
                 player1Field, player2Field, player3Field, player4Field, mainCardArea,
                 cardArea[0], cardArea[1], cardArea[2], cardArea[3],message, 
                 turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);
@@ -511,7 +650,88 @@ public class Client extends Application implements Runnable, BlackjackConstants
         }
         System.out.println();
     }
+ static String avatar;
     
+        public static String display(String title, String message){
+        Stage window = new Stage();
+        window.setTitle(title);
+        String Avatar;
+        StackPane root = new StackPane();
+        GridPane grid = new GridPane();
+        Pane buttonPane = new Pane();
+        
+        //set and configure background
+        grid.setStyle("-fx-background-image: url(" + BACKGROUND2 + "); \n" +
+                      "-fx-background-position: center center; \n" +
+                      "-fx-background-repeat: stretch; \n" + 
+                      "-fx-background-size: 1280 720;");
+        //grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setVgap(8);
+        //grid.setHgap(10);
+        grid.setAlignment(Pos.CENTER);
+        
+        //add column and row constraints to keep elements in the proper position
+        grid.getColumnConstraints().add(new ColumnConstraints(235));
+        grid.getColumnConstraints().add(new ColumnConstraints(75));
+        grid.getColumnConstraints().add(new ColumnConstraints(250));
+        grid.getColumnConstraints().add(new ColumnConstraints(250));
+        grid.getColumnConstraints().add(new ColumnConstraints(345));
+        grid.getColumnConstraints().add(new ColumnConstraints(75));
+        grid.getRowConstraints().add(new RowConstraints(50));
+        grid.getRowConstraints().add(new RowConstraints(650));
+        avatar = "";
+        window.initModality(Modality.APPLICATION_MODAL);
+        
+        Label label = new Label();
+        label.setText(message);
+        
+        Button avatarOne = new Button("Confirm");
+        avatarOne.setLayoutX(120);
+        avatarOne.setLayoutY(250);
+        avatarOne.setOnAction(e->{
+            avatar = "images/PlayerMan.png";
+            window.close();
+        });
+        
+        Button avatarTwo =  new Button("Confirm");
+        avatarTwo.setLayoutX(560);
+        avatarTwo.setLayoutY(250);
+        avatarTwo.setOnAction(e->{
+            avatar = "images/TrashMan.png";
+            window.close();
+            });
+        Button avatarThree = new Button("Confirm");
+        avatarThree.setLayoutX(1005);
+        avatarThree.setLayoutY(250);
+        avatarThree.setOnAction(e->{
+            avatar = "images/Banana.png";
+            window.close();
+            });
+        Button avatarFour = new Button("Confirm");
+        avatarFour.setLayoutX(325);
+        avatarFour.setLayoutY(620);
+        avatarFour.setOnAction(e->{
+            avatar = "images/MoneyMan.png";
+            window.close();
+            });
+        Button avatarFive = new Button("Confirm");
+        avatarFive.setLayoutX(830);
+        avatarFive.setLayoutY(620);
+        avatarFive.setOnAction(e->{
+            avatar = "images/MonopolyCar.png";
+            window.close();
+        });
+
+        buttonPane.getChildren().addAll(label, avatarOne, avatarTwo, avatarThree, avatarFour, avatarFive);
+        root.getChildren().addAll(grid, buttonPane);
+
+        
+        Scene scene = new Scene(root);
+        window.setScene(scene);
+        window.showAndWait();
+        
+        return avatar;
+        }
     public static void main(String[] args)
     {
         launch(args);
