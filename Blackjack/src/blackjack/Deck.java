@@ -40,6 +40,8 @@ public class Deck
 
     public Card draw()
     {
+        if(getSize() < 3)
+            this.cards = (new Deck()).cards;
         return cards.remove();
     }
     
