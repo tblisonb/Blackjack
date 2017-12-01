@@ -12,6 +12,7 @@ class Player extends Dealer implements Serializable
     private final String name;
     //private int playerNum;
     private long ID;
+    private String message;
     
     public enum State 
     { 
@@ -33,6 +34,7 @@ class Player extends Dealer implements Serializable
         this.move = Move.DEFAULT;
         //this.playerNum = -1;
         ID = System.currentTimeMillis();
+        this.message = message;
     }
     
     public ArrayList<Card> getSecondHand()
@@ -108,5 +110,15 @@ class Player extends Dealer implements Serializable
     public int getBet()
     {
         return currentBet;
+    }
+    
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+    
+    public String getMessage()
+    {
+        return message;
     }
 }

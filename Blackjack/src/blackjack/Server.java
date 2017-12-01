@@ -264,6 +264,7 @@ class HandleSession implements Runnable, BlackjackConstants
         
         if (getValue(players.get(playerid).getSecondHand()) > 21)
         {
+            players.get(playerid).setMessage("You busted.");
             lose(playerid);
             for (Card c : players.get(playerid).getSecondHand())
                 deck.returnToDeck(c);
@@ -271,6 +272,7 @@ class HandleSession implements Runnable, BlackjackConstants
         }
         else if (getValue(players.get(playerid).getSecondHand()) == 21)
         {
+            players.get(playerid).setMessage("Blackjack! You win.");
             win(playerid);
             for (Card c : players.get(playerid).getSecondHand())
                 deck.returnToDeck(c);
@@ -282,6 +284,7 @@ class HandleSession implements Runnable, BlackjackConstants
         toClient.get(playerid).flush();
         //System.out.println("draw: "+deck.draw().getSuit());
         //System.out.println("hand value " + getValue(players.get(playerid).getSecondHand()));
+        players.get(playerid).setMessage("");
     }
     
     public void stay(int playerid) throws IOException
@@ -291,11 +294,20 @@ class HandleSession implements Runnable, BlackjackConstants
         System.out.println("--------------DEALER HAND VALUE: " + dealer.getHandValue());
         
         if (dealer.getHandValue() > 21)
+        {
+            players.get(playerid).setMessage("Dealer busted. You win!");
             win(playerid);
+        }
         else if (getValue(players.get(playerid).getSecondHand()) > dealer.getHandValue())
+        {
+            players.get(playerid).setMessage("Your hand beats the dealer's. You win!");
             win(playerid);
+        }
         else if (getValue(players.get(playerid).getSecondHand()) < dealer.getHandValue())
+        {
+            players.get(playerid).setMessage("Your hand is smaller than the dealer's You lose.");
             lose(playerid);
+        }
             
         for (Card c : players.get(playerid).getSecondHand())
             deck.returnToDeck(c);
@@ -304,6 +316,7 @@ class HandleSession implements Runnable, BlackjackConstants
         players.get(playerid).setMove(Move.DEFAULT);
         toClient.get(playerid).writeObject(players.get(playerid));
         toClient.get(playerid).flush();
+        players.get(playerid).setMessage("");
     }
     
     public void win(int playerid)

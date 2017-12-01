@@ -41,7 +41,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private ObjectInputStream fromServer;
     private ObjectOutputStream toServer;
     private TextField creditsField, betField;
-    private Text mainCardArea;
+    private Text mainCardArea, message;
     private TextField[] playerFields;
     private Text[] cardArea;
     private Polygon[] turnMarker;
@@ -304,6 +304,12 @@ public class Client extends Application implements Runnable, BlackjackConstants
         mainCardArea.setFill(Color.web("#FFD000"));
         mainCardArea.setWrappingWidth(117);
         
+        message = new Text();
+        message.setLayoutX(10);
+        message.setLayoutY(700);
+        message.setFont(Font.font("Times New Roman", 16));
+        message.setFill(Color.WHITE);
+        
         //current turn indicator
         turnMarker = new Polygon[5];
         for (int i = 0; i < 5; i++)
@@ -337,6 +343,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //fieldPane.getChildren().addAll(turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);*/
         root.getChildren().addAll(btnStay, btnHit, betLabel, creditsLabel, betField, creditsField, 
                 player1Field, player2Field, player3Field, player4Field, mainCardArea,
+                cardArea[0], cardArea[1], cardArea[2], cardArea[3],message, 
                 turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);
         
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -494,6 +501,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
             cardCode += c.getUnicode();
         }
         mainCardArea.setText(cardCode);
+        message.setText(supportedPlayer.getMessage());
         
         System.out.println("List of names:");
         for (Player p : players) {
