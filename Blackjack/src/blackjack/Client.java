@@ -513,6 +513,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         else
             turnMarker[0].setVisible(false);
         
+        cardCode = "";
         creditsField.setText(supportedPlayer.getCredits() + "");
         for (Card c : supportedPlayer.getSecondHand()) {
             cardCode += c.getUnicode();
