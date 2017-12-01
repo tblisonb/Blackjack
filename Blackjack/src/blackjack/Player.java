@@ -6,7 +6,7 @@ import java.util.ArrayList;
 class Player extends Dealer implements Serializable
 {
     private ArrayList<Card> hand2;
-    private int credits, currentBet;
+    private int credits, currentBet, dealerValue;
     private State state;
     private Move move;
     private final String name;
@@ -34,7 +34,8 @@ class Player extends Dealer implements Serializable
         this.move = Move.DEFAULT;
         //this.playerNum = -1;
         ID = System.currentTimeMillis();
-        this.message = message;
+        this.message = "";
+        this.dealerValue = 0;
     }
     
     public ArrayList<Card> getSecondHand()
@@ -120,5 +121,15 @@ class Player extends Dealer implements Serializable
     public String getMessage()
     {
         return message;
+    }
+
+    public int getDealerValue()
+    {
+        return dealerValue;
+    }
+
+    public void setDealerValue(int dealerValue)
+    {
+        this.dealerValue = dealerValue;
     }
 }
