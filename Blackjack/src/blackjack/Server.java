@@ -178,9 +178,12 @@ class HandleSession implements Runnable, BlackjackConstants
             try
             {
                 while (true) {
+                    
 
                     Object object = fromClient.get(currentPlayerNum).readObject();
+                    
                     if (((Player) object).getTimeStamp() > timeSinceLastUpdate) {
+<<<<<<< HEAD
                         players.set(currentPlayerNum, (Player) object);
                         for(Player p: players){
                             p.setState(State.OFF);
@@ -225,6 +228,10 @@ class HandleSession implements Runnable, BlackjackConstants
             return;
         }
         for (int i = 0; i < players.size(); i++) {
+<<<<<<< HEAD
+=======
+           
+>>>>>>> dffa4ba36a4c57558d6a4dc578c76a98cdc5b728
             for (int j = 0; j < object.size(); j++) {
 
                 try {
@@ -247,6 +254,7 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void hit(int playerid) throws IOException, ClassNotFoundException
     {
+        
         players.get(playerid).addCardSecondHand(deck.draw());
         
         Random generate = new Random();
@@ -317,17 +325,7 @@ class HandleSession implements Runnable, BlackjackConstants
     {
         players.get(playerid).addCredits(players.get(playerid).getBet());
         advancePlayer();
-        /*int winner  = getValue(players.get(0).getSecondHand());
-        int index = 0;
-        Player play;
-        for(int i =0; i < players.size(); i++)
-        {
-            if(getValue(players.get(i).getSecondHand()) > winner)
-                winner = getValue(players.get(i).getSecondHand());
-            index = 0;
-        }
-        players.get(index).addCredits(index);
-        return index;*/
+        
     }
     
     public void lose(int playerid)
