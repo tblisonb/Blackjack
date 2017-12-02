@@ -48,6 +48,17 @@ public class Card implements Serializable
                 unicodeRep = '\uDCD0';
                 break;
         }
+        switch (number){
+            case JACK:
+                unicodeRep++;
+                break;
+            case QUEEN:
+                unicodeRep+=2;
+                break;
+            case KING:
+                unicodeRep+=3;
+                break;
+        }
         unicodeRep += number.value;
         this.unicode = "\uD83C" + unicodeRep;
     }
