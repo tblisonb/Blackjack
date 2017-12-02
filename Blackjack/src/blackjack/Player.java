@@ -134,8 +134,8 @@ class Player extends Dealer implements Serializable
         this.dealerValue = dealerValue;
     }
     
-    public void setTimeStamp(){
-        timeStamp = System.currentTimeMillis();
+    public void setTimeStamp(long t){
+        timeStamp = t;
     }
     
     public long getTimeStamp(){

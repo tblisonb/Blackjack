@@ -103,7 +103,6 @@ public class Server extends Application implements BlackjackConstants
                             Player newPlayer = (Player)fromClient.get(i).readObject();
                             //newPlayer.setPlayerNum(i);
                             players.add(i, newPlayer);
-                            System.out.println(players.get(i).getState());
                             
                           if(sessionNum == 5){
                           
@@ -182,9 +181,11 @@ class HandleSession implements Runnable, BlackjackConstants
 
                     Object object = fromClient.get(currentPlayerNum).readObject();
                     if (((Player) object).getTimeStamp() > timeSinceLastUpdate) {
-                        timeSinceLastUpdate = System.currentTimeMillis();
                         players.set(currentPlayerNum, (Player) object);
-                        //System.out.println(currentPlayerNum + " is: " + players.get(currentPlayerNum).getState());
+                        for(Player p: players){
+                            p.setState(State.OFF);
+                        }
+                        players.get(currentPlayerNum).setState(State.ON);
 
                         if (players.get(currentPlayerNum).getMove() != Move.DEFAULT) {
                             if (players.get(currentPlayerNum).getMove() == Move.HIT) {
@@ -203,8 +204,10 @@ class HandleSession implements Runnable, BlackjackConstants
                             }
                         }
                         broadcastPlayerData(players);
+                        timeSinceLastUpdate = System.currentTimeMillis();
                     } else {
-                        System.out.println("Discarding an object from " + (timeSinceLastUpdate - ((Player) object).getTimeStamp()) + " milis ago");
+                        //fromClient.get(currentPlayerNum)
+                        System.out.println("Discarding an object from " + (timeSinceLastUpdate - ((Player) object).getTimeStamp()) + " milis ago. The current last turn time is " + timeSinceLastUpdate + " and the Player time is " + ((Player) object).getTimeStamp() + ". The time is currently " + System.currentTimeMillis());
                     }
                 }
             }
@@ -222,8 +225,6 @@ class HandleSession implements Runnable, BlackjackConstants
             return;
         }
         for (int i = 0; i < players.size(); i++) {
-            //if(players.get(i).getState() == State.OFF && players.get(i+1) != null)
-            //players.get(i+1).setState(State.ON);
             for (int j = 0; j < object.size(); j++) {
 
                 try {
@@ -338,10 +339,7 @@ class HandleSession implements Runnable, BlackjackConstants
     private void advancePlayer()
     {
         System.out.println("Advancing player from " + players.get(currentPlayerNum).getName() + " to " + players.get((1 + currentPlayerNum) % players.size()).getName());
-        //players.get(currentPlayerNum).setState(State.OFF);
-        System.out.println((1 + currentPlayerNum) + "%" + players.size());
         currentPlayerNum = (++currentPlayerNum) % players.size();
-        //players.get(currentPlayerNum).setState(State.ON);
     }
 
     private int getValue(ArrayList<Card> hand)

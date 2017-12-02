@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -376,7 +377,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         if (betField.getText().isEmpty())
             betField.setText("0");
         supportedPlayer.setBet(Integer.parseInt(betField.getText()));
-        supportedPlayer.setTimeStamp();
+        supportedPlayer.setTimeStamp(System.currentTimeMillis());
         toServer.writeObject(supportedPlayer);
         toServer.flush();
         
@@ -397,7 +398,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         supportedPlayer.setMove(Move.STAY);
         if (betField.getText().isEmpty())
             betField.setText("0");
-        supportedPlayer.setTimeStamp();
+        supportedPlayer.setTimeStamp(System.currentTimeMillis());
         toServer.writeObject(supportedPlayer);
         toServer.flush();
     }
@@ -433,6 +434,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         {
             try
             {
+                supportedPlayer.setTimeStamp(System.currentTimeMillis());
                 toServer.writeObject(supportedPlayer);
                 toServer.flush();
                 while (true)
@@ -489,43 +491,41 @@ public class Client extends Application implements Runnable, BlackjackConstants
         }).start();
     }
     
-    public void updateFields()
-    {
-        String cardCode = "";
-        for (int i = 0; i < players.size(); i++)
-        {
+    public void updateFields() {
+        try {
+            String cardCode = "";
+            for (int i = 0; i < players.size(); i++) {
+                cardCode = "";
+                playerFields[i].setText(players.get(i).getName());
+                if (players.get(i).getState() == State.ON) {
+                    turnMarker[i].setVisible(true);
+                } else {
+                    turnMarker[i].setVisible(false);
+                }
+                for (Card c : players.get(i).getSecondHand()) {
+                    cardCode += c.getUnicode();
+                }
+                cardArea[i].setText(cardCode);
+            }
+            //turnMarker[0].setVisible(true);
+            if (supportedPlayer.getState() == State.ON) {
+                turnMarker[0].setVisible(true);
+            } else {
+                turnMarker[0].setVisible(false);
+            }
+
             cardCode = "";
-            playerFields[i].setText(players.get(i).getName());
-            if (players.get(i).getState() == State.ON)
-                turnMarker[i].setVisible(true);
-            else
-                turnMarker[i].setVisible(false);
-            for (Card c : players.get(i).getSecondHand()) {
+            creditsField.setText(supportedPlayer.getCredits() + "");
+            for (Card c : supportedPlayer.getSecondHand()) {
                 cardCode += c.getUnicode();
             }
-            cardArea[i].setText(cardCode);
+
+            mainCardArea.setText(cardCode);
+            message.setText(supportedPlayer.getMessage());
+            dealerHand.setText(supportedPlayer.getDealerValue() + "");
+        } catch (ConcurrentModificationException e) {
+            System.out.println("Update fields is the root of all of our issues");
         }
-        //turnMarker[0].setVisible(true);
-        if (supportedPlayer.getState() == State.ON)
-            turnMarker[0].setVisible(true);
-        else
-            turnMarker[0].setVisible(false);
-        
-        cardCode = "";
-        creditsField.setText(supportedPlayer.getCredits() + "");
-        for (Card c : supportedPlayer.getSecondHand()) {
-            cardCode += c.getUnicode();
-        }
-        
-        mainCardArea.setText(cardCode);
-        message.setText(supportedPlayer.getMessage());
-        dealerHand.setText(supportedPlayer.getDealerValue() + "");
-        
-        System.out.println("List of names:");
-        for (Player p : players) {
-            System.out.print(p.getName() + " - ");
-        }
-        System.out.println();
     }
     
     public static void main(String[] args)
