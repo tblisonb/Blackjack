@@ -189,6 +189,12 @@ class HandleSession implements Runnable, BlackjackConstants
                             p.setState(State.OFF);
                         }
                         players.get(currentPlayerNum).setState(State.ON);
+=======
+                        
+                        players.set(currentPlayerNum, (Player) object);
+                       
+                       
+>>>>>>> dffa4ba36a4c57558d6a4dc578c76a98cdc5b728
 
                         if (players.get(currentPlayerNum).getMove() != Move.DEFAULT) {
                             if (players.get(currentPlayerNum).getMove() == Move.HIT) {
@@ -281,8 +287,7 @@ class HandleSession implements Runnable, BlackjackConstants
         
         players.get(playerid).setMove(Move.DEFAULT);
         broadcastPlayerData(players);
-        //System.out.println("draw: "+deck.draw().getSuit());
-        //System.out.println("hand value " + getValue(players.get(playerid).getSecondHand()));
+       
         players.get(playerid).setMessage("");
         players.get(playerid).setDealerValue(0);
     }
@@ -323,6 +328,8 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void win(int playerid)
     {
+        if(players.get(playerid).getBet() > players.get(playerid).getCredits())
+           players.get(playerid).setBet(players.get(playerid).getCredits());
         players.get(playerid).addCredits(players.get(playerid).getBet());
         advancePlayer();
         
@@ -330,7 +337,13 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void lose(int playerid)
     {
+        if(players.get(playerid).getBet() > players.get(playerid).getCredits())
+           players.get(playerid).setBet(players.get(playerid).getCredits());
+        
         players.get(playerid).addCredits(-(players.get(playerid).getBet()));
+        if(players.get(playerid).getCredits() <= 0){
+        players.get(playerid).addCredits(500);
+        }
         advancePlayer();
     }
     
