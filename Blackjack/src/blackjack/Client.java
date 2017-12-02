@@ -73,6 +73,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //IP Address
         Label ipLabel = new Label("IP Address: ");
         TextField ipInput = new TextField();
+        ipInput.setText("localhost");
         GridPane.setConstraints(ipLabel, 0, 1);
         GridPane.setConstraints(ipInput, 1, 1);
 
@@ -375,7 +376,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         if (betField.getText().isEmpty())
             betField.setText("0");
         supportedPlayer.setBet(Integer.parseInt(betField.getText()));
-        updateFields();
+        supportedPlayer.setTimeStamp();
         toServer.writeObject(supportedPlayer);
         toServer.flush();
         
@@ -396,7 +397,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         supportedPlayer.setMove(Move.STAY);
         if (betField.getText().isEmpty())
             betField.setText("0");
-        updateFields();
+        supportedPlayer.setTimeStamp();
         toServer.writeObject(supportedPlayer);
         toServer.flush();
     }
@@ -444,7 +445,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
                     Player object = (Player)fromServer.readObject();
                     
                     boolean isSet = false;
-                    updateFields();
                     for (int i = 0; i < players.size(); i++)
                         if (object.getID() == supportedPlayer.getID())
                         {
@@ -462,7 +462,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
                             isSet = true;
                             players.set(i, object);
                         }
-                               updateFields();
                     if (isSet == false)
                         if (object.getID() == supportedPlayer.getID())
                         {
@@ -475,12 +474,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
                             players.add(object);
                     //System.out.println(players.size());
                     
-                    updateFields();
-                    
                     if(players.size() <=0){
                         System.out.println("on");
                         supportedPlayer.setState(State.ON);
                     }
+                    updateFields();
                 }
             }
             catch (IOException | ClassNotFoundException e)

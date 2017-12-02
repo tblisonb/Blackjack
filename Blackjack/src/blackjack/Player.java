@@ -13,6 +13,7 @@ class Player extends Dealer implements Serializable
     //private int playerNum;
     private long ID;
     private String message;
+    private long timeStamp;
     
     public enum State 
     { 
@@ -131,5 +132,13 @@ class Player extends Dealer implements Serializable
     public void setDealerValue(int dealerValue)
     {
         this.dealerValue = dealerValue;
+    }
+    
+    public void setTimeStamp(){
+        timeStamp = System.currentTimeMillis();
+    }
+    
+    public long getTimeStamp(){
+        return timeStamp;
     }
 }

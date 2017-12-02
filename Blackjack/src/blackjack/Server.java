@@ -154,6 +154,7 @@ class HandleSession implements Runnable, BlackjackConstants
     public static Deck deck = new Deck();
     private int currentPlayerNum;
     private Dealer dealer;
+    private long timeSinceLastUpdate;
    
     
     /**
@@ -167,6 +168,7 @@ class HandleSession implements Runnable, BlackjackConstants
         this.sessionNum = sessionNum;
         this.log = log;
         this.dealer = new Dealer();
+        this.timeSinceLastUpdate = 0;
     }
 
     @Override
@@ -176,32 +178,34 @@ class HandleSession implements Runnable, BlackjackConstants
         {
             try
             {
-                while (true)
-                {
+                while (true) {
+
                     Object object = fromClient.get(currentPlayerNum).readObject();
-                    players.set(currentPlayerNum, (Player) object);
-                    //System.out.println(currentPlayerNum + " is: " + players.get(currentPlayerNum).getState());
+                    if (((Player) object).getTimeStamp() > timeSinceLastUpdate) {
+                        timeSinceLastUpdate = System.currentTimeMillis();
+                        players.set(currentPlayerNum, (Player) object);
+                        //System.out.println(currentPlayerNum + " is: " + players.get(currentPlayerNum).getState());
 
-                    if (players.get(currentPlayerNum).getMove() != Move.DEFAULT)
-                    {
-                        if (players.get(currentPlayerNum).getMove() == Move.HIT) 
-                            hit(currentPlayerNum);
-                        else if(players.get(currentPlayerNum).getMove() == Move.STAY)
-                            stay(currentPlayerNum);       
-
-                        System.out.println("List of names:");
-                        for(Player p: players)
-                        {
-                            System.out.print(p.getName() + " - Cards: ");
-                            for(Card c: p.getSecondHand()){
-                                System.out.print(c.toString() + " ");
+                        if (players.get(currentPlayerNum).getMove() != Move.DEFAULT) {
+                            if (players.get(currentPlayerNum).getMove() == Move.HIT) {
+                                hit(currentPlayerNum);
+                            } else if (players.get(currentPlayerNum).getMove() == Move.STAY) {
+                                stay(currentPlayerNum);
                             }
-                            System.out.print(" - " + p.getState());
-                            System.out.println();
+
+                            System.out.println("List of names:");
+                            for (Player p : players) {
+                                System.out.print(p.getName() + " - Cards: ");
+                                for (Card c : p.getSecondHand()) {
+                                    System.out.print(c.toString() + ", ");
+                                }
+                                System.out.println();
+                            }
                         }
+                        broadcastPlayerData(players);
+                    } else {
+                        System.out.println("Discarding an object from " + (timeSinceLastUpdate - ((Player) object).getTimeStamp()) + " milis ago");
                     }
-                    System.out.println("broadcasting in loop");
-                    broadcastPlayerData(players);
                 }
             }
             catch (IOException | ClassNotFoundException e)
@@ -213,6 +217,7 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void broadcastPlayerData(List<Player> object) throws IOException, ClassNotFoundException
     {
+        System.out.println("Updating Players at " + System.currentTimeMillis());
         if (object == null) {
             return;
         }
@@ -332,9 +337,11 @@ class HandleSession implements Runnable, BlackjackConstants
     
     private void advancePlayer()
     {
-        players.get(currentPlayerNum).setState(State.OFF);
+        System.out.println("Advancing player from " + players.get(currentPlayerNum).getName() + " to " + players.get((1 + currentPlayerNum) % players.size()).getName());
+        //players.get(currentPlayerNum).setState(State.OFF);
+        System.out.println((1 + currentPlayerNum) + "%" + players.size());
         currentPlayerNum = (++currentPlayerNum) % players.size();
-        players.get(currentPlayerNum).setState(State.ON);
+        //players.get(currentPlayerNum).setState(State.ON);
     }
 
     private int getValue(ArrayList<Card> hand)
