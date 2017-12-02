@@ -434,53 +434,37 @@ public class Client extends Application implements Runnable, BlackjackConstants
         {
             try
             {
-                supportedPlayer.setTimeStamp(System.currentTimeMillis());
                 toServer.writeObject(supportedPlayer);
                 toServer.flush();
-                while (true)
-                {
-                    if(supportedPlayer.getSecondHand().size() <= 0)
-                    {
+                while (true) {
+                    if (supportedPlayer.getSecondHand().size() <= 0) {
                         supportedPlayer.addCardSecondHand(HandleSession.deck.draw());
                         supportedPlayer.addCardSecondHand(HandleSession.deck.draw());
                     }
-                    Player object = (Player)fromServer.readObject();
-                    
+                    Player object = (Player) fromServer.readObject();
+
                     boolean isSet = false;
-                    for (int i = 0; i < players.size(); i++)
-                        if (object.getID() == supportedPlayer.getID())
-                        {
-                           
-                            System.out.println("same object1");
-                            System.out.println("Hand size: "+ supportedPlayer.getSecondHand().size());
-                            
+                    for (int i = 0; i < players.size(); i++) {
+                        if (object.getID() == supportedPlayer.getID()) {
+
+                            //System.out.println("same object1");
+                            //System.out.println("Hand size: "+ supportedPlayer.getSecondHand().size());
                             isSet = true;
                             supportedPlayer = object;
-                            System.out.println("state:" + supportedPlayer.getState());
-                        }
-                        
-                        else if (players.get(i).getID() == object.getID())
-                        {
+                        } else if (players.get(i).getID() == object.getID()) {
                             isSet = true;
                             players.set(i, object);
                         }
-                    if (isSet == false)
-                        if (object.getID() == supportedPlayer.getID())
-                        {
-                            System.out.println("same object2");
-                            System.out.println("Hand size: "+ supportedPlayer.getSecondHand().size());
+                    }
+                    if (isSet == false) {
+                        if (object.getID() == supportedPlayer.getID()) {
                             supportedPlayer = object;
-                            System.out.println("state:" + supportedPlayer.getState());
-                        }
-                        else
+                        } else {
                             players.add(object);
-                    //System.out.println(players.size());
-                    
-                    if(players.size() <=0){
-                        System.out.println("on");
-                        supportedPlayer.setState(State.ON);
+                        }
                     }
                     updateFields();
+                    System.out.println("The time on the client is " + System.currentTimeMillis());
                 }
             }
             catch (IOException | ClassNotFoundException e)

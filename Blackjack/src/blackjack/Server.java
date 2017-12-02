@@ -183,19 +183,12 @@ class HandleSession implements Runnable, BlackjackConstants
                     Object object = fromClient.get(currentPlayerNum).readObject();
                     
                     if (((Player) object).getTimeStamp() > timeSinceLastUpdate) {
-<<<<<<< HEAD
                         players.set(currentPlayerNum, (Player) object);
                         for(Player p: players){
                             p.setState(State.OFF);
                         }
                         players.get(currentPlayerNum).setState(State.ON);
-=======
-                        
                         players.set(currentPlayerNum, (Player) object);
-                       
-                       
->>>>>>> dffa4ba36a4c57558d6a4dc578c76a98cdc5b728
-
                         if (players.get(currentPlayerNum).getMove() != Move.DEFAULT) {
                             if (players.get(currentPlayerNum).getMove() == Move.HIT) {
                                 hit(currentPlayerNum);
@@ -234,10 +227,6 @@ class HandleSession implements Runnable, BlackjackConstants
             return;
         }
         for (int i = 0; i < players.size(); i++) {
-<<<<<<< HEAD
-=======
-           
->>>>>>> dffa4ba36a4c57558d6a4dc578c76a98cdc5b728
             for (int j = 0; j < object.size(); j++) {
 
                 try {
