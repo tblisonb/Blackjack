@@ -154,6 +154,7 @@ class HandleSession implements Runnable, BlackjackConstants
     private int currentPlayerNum;
     private Dealer dealer;
     private long timeSinceLastUpdate;
+    private boolean endGame;
    
     
     /**
@@ -168,6 +169,7 @@ class HandleSession implements Runnable, BlackjackConstants
         this.log = log;
         this.dealer = new Dealer();
         this.timeSinceLastUpdate = 0;
+        this.endGame = false;
     }
 
     @Override
@@ -208,8 +210,10 @@ class HandleSession implements Runnable, BlackjackConstants
                         broadcastPlayerData(players);
                         timeSinceLastUpdate = System.currentTimeMillis();
                     } else {
-                        //fromClient.get(currentPlayerNum)
-                        System.out.println("Discarding an object from " + (timeSinceLastUpdate - ((Player) object).getTimeStamp()) + " milis ago. The current last turn time is " + timeSinceLastUpdate + " and the Player time is " + ((Player) object).getTimeStamp() + ". The time is currently " + System.currentTimeMillis());
+                        System.out.println("Discarding an object from " + (timeSinceLastUpdate - ((Player) object).getTimeStamp()) + " milis ago");
+                    }
+                    if(endGame == true){
+                    System.exit(0);
                     }
                 }
             }
@@ -319,7 +323,11 @@ class HandleSession implements Runnable, BlackjackConstants
     {
         if(players.get(playerid).getBet() > players.get(playerid).getCredits())
            players.get(playerid).setBet(players.get(playerid).getCredits());
-        players.get(playerid).addCredits(players.get(playerid).getBet());
+        if(getValue(players.get(playerid).getSecondHand()) == 21)
+           players.get(playerid).addCredits((int)(players.get(playerid).getBet()*1.5));
+        else{
+           players.get(playerid).addCredits(players.get(playerid).getBet());
+        }
         advancePlayer();
         
     }
@@ -331,7 +339,7 @@ class HandleSession implements Runnable, BlackjackConstants
         
         players.get(playerid).addCredits(-(players.get(playerid).getBet()));
         if(players.get(playerid).getCredits() <= 0){
-        players.get(playerid).addCredits(500);
+        players.get(playerid).addCredits(250);
         }
         advancePlayer();
     }
@@ -340,6 +348,24 @@ class HandleSession implements Runnable, BlackjackConstants
     {
         System.out.println("Advancing player from " + players.get(currentPlayerNum).getName() + " to " + players.get((1 + currentPlayerNum) % players.size()).getName());
         currentPlayerNum = (++currentPlayerNum) % players.size();
+        //players.get(currentPlayerNum).setState(State.ON);
+        Player play = new Player("testing");
+        play.addCredits(4499);
+        if(currentPlayerNum == players.size()){
+            for(int i = 0; i < players.size(); i++){
+                if(players.get(i).getCredits() >= 5000 && players.get(i).getCredits() > play.getCredits()){
+                    play = players.get(i);
+                    endGame = true;
+                }
+            }
+            for(int i = 0; i < players.size(); i++){
+                if(players.get(i).getCredits() == play.getCredits())
+                    players.get(i).setMessage("You Won the Game!");
+                else
+                    players.get(i).setMessage("You lost!");
+            }
+            
+        }
     }
 
     private int getValue(ArrayList<Card> hand)
