@@ -179,12 +179,15 @@ class HandleSession implements Runnable, BlackjackConstants
             try
             {
                 while (true) {
+                    
 
                     Object object = fromClient.get(currentPlayerNum).readObject();
+                    
                     if (((Player) object).getTimeStamp() > timeSinceLastUpdate) {
-                        timeSinceLastUpdate = System.currentTimeMillis();
+                        
                         players.set(currentPlayerNum, (Player) object);
-                        //System.out.println(currentPlayerNum + " is: " + players.get(currentPlayerNum).getState());
+                       
+                       
 
                         if (players.get(currentPlayerNum).getMove() != Move.DEFAULT) {
                             if (players.get(currentPlayerNum).getMove() == Move.HIT) {
@@ -203,6 +206,7 @@ class HandleSession implements Runnable, BlackjackConstants
                             }
                         }
                         broadcastPlayerData(players);
+                        timeSinceLastUpdate = System.currentTimeMillis();
                     } else {
                         System.out.println("Discarding an object from " + (timeSinceLastUpdate - ((Player) object).getTimeStamp()) + " milis ago");
                     }
@@ -222,8 +226,7 @@ class HandleSession implements Runnable, BlackjackConstants
             return;
         }
         for (int i = 0; i < players.size(); i++) {
-            //if(players.get(i).getState() == State.OFF && players.get(i+1) != null)
-            //players.get(i+1).setState(State.ON);
+           
             for (int j = 0; j < object.size(); j++) {
 
                 try {
@@ -246,6 +249,7 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void hit(int playerid) throws IOException, ClassNotFoundException
     {
+        
         players.get(playerid).addCardSecondHand(deck.draw());
         
         Random generate = new Random();
@@ -272,8 +276,7 @@ class HandleSession implements Runnable, BlackjackConstants
         
         players.get(playerid).setMove(Move.DEFAULT);
         broadcastPlayerData(players);
-        //System.out.println("draw: "+deck.draw().getSuit());
-        //System.out.println("hand value " + getValue(players.get(playerid).getSecondHand()));
+       
         players.get(playerid).setMessage("");
         players.get(playerid).setDealerValue(0);
     }
@@ -314,24 +317,22 @@ class HandleSession implements Runnable, BlackjackConstants
     
     public void win(int playerid)
     {
+        if(players.get(playerid).getBet() > players.get(playerid).getCredits())
+           players.get(playerid).setBet(players.get(playerid).getCredits());
         players.get(playerid).addCredits(players.get(playerid).getBet());
         advancePlayer();
-        /*int winner  = getValue(players.get(0).getSecondHand());
-        int index = 0;
-        Player play;
-        for(int i =0; i < players.size(); i++)
-        {
-            if(getValue(players.get(i).getSecondHand()) > winner)
-                winner = getValue(players.get(i).getSecondHand());
-            index = 0;
-        }
-        players.get(index).addCredits(index);
-        return index;*/
+        
     }
     
     public void lose(int playerid)
     {
+        if(players.get(playerid).getBet() > players.get(playerid).getCredits())
+           players.get(playerid).setBet(players.get(playerid).getCredits());
+        
         players.get(playerid).addCredits(-(players.get(playerid).getBet()));
+        if(players.get(playerid).getCredits() <= 0){
+        players.get(playerid).addCredits(500);
+        }
         advancePlayer();
     }
     
