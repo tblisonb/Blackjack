@@ -156,48 +156,35 @@ public class Client extends Application implements Runnable, BlackjackConstants
                       "-fx-background-position: center center; \n" +
                       "-fx-background-repeat: stretch; \n" + 
                       "-fx-background-size: 1280 720;");
-        //grid.setPadding(new Insets(10, 10, 10, 10));
-        //grid.setVgap(8);
-        //grid.setHgap(10);
-        //grid.setAlignment(Pos.CENTER);
-        
-        //add column and row constraints to keep elements in the proper position
-        /*
-        grid.getColumnConstraints().add(new ColumnConstraints(235));
-        grid.getColumnConstraints().add(new ColumnConstraints(75));
-        grid.getColumnConstraints().add(new ColumnConstraints(250));
-        grid.getColumnConstraints().add(new ColumnConstraints(250));
-        grid.getColumnConstraints().add(new ColumnConstraints(345));
-        grid.getColumnConstraints().add(new ColumnConstraints(75));
-        grid.getRowConstraints().add(new RowConstraints(50));
-        grid.getRowConstraints().add(new RowConstraints(650));*/
         
         //current bet label
         Label betLabel = new Label("CURRENT BET: ");
         betLabel.setFont(Font.font("Times New Roman", 32));
         betLabel.setTextFill(Color.web("#FFD000"));
+        betLabel.setLayoutX(15);
+        betLabel.setLayoutY(15);
         
         //current bet field
         betField = new TextField();
-        //betField.setEditable(false);
         betField.setFont(Font.font("Times New Roman", 24));
-        //betField.setPrefHeight(34);
         betField.setPrefWidth(80);
-        betField.setLayoutX(235);
+        betField.setLayoutX(250);
+        betField.setLayoutY(15);
         
         //credits available label
         Label creditsLabel = new Label("CREDITS AVAILABLE: ");
         creditsLabel.setFont(Font.font("Times New Roman", 32));
         creditsLabel.setTextFill(Color.web("#FFD000"));
-        creditsLabel.setLayoutX(810);        
-        //credits available field
-        creditsField = new TextField();
+        creditsLabel.setLayoutX(825);   
+        creditsLabel.setLayoutY(15);
         
+        //credits field
+        creditsField = new TextField();
         creditsField.setEditable(false);
         creditsField.setFont(Font.font("Times New Roman", 24));
-        //creditsField.setPrefHeight(34);
         creditsField.setPrefWidth(80);
-        creditsField.setLayoutX(1155);
+        creditsField.setLayoutX(1170);
+        creditsField.setLayoutY(15);
         
         //stay button
         Button btnStay = new Button("STAY");
@@ -238,7 +225,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //player 1
         TextField player1Field = new TextField();
         player1Field.setLayoutX(157);
-        player1Field.setLayoutY(550);
+        player1Field.setLayoutY(403);
         player1Field.setEditable(false);
         player1Field.setPrefWidth(96);
         player1Field.setFont(Font.font("Times New Roman"));
@@ -246,7 +233,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //player 2
         TextField player2Field = new TextField();
         player2Field.setLayoutX(276);
-        player2Field.setLayoutY(550);
+        player2Field.setLayoutY(403);
         player2Field.setEditable(false);
         player2Field.setPrefWidth(96);
         player2Field.setFont(Font.font("Times New Roman"));
@@ -254,7 +241,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //player 3
         TextField player3Field = new TextField();
         player3Field.setLayoutX(908);
-        player3Field.setLayoutY(550);
+        player3Field.setLayoutY(403);
         player3Field.setEditable(false);
         player3Field.setPrefWidth(96);
         player3Field.setFont(Font.font("Times New Roman"));
@@ -262,7 +249,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //player 4
         TextField player4Field = new TextField();
         player4Field.setLayoutX(1026);
-        player4Field.setLayoutY(550);
+        player4Field.setLayoutY(403);
         player4Field.setEditable(false);
         player4Field.setPrefWidth(96);
         player4Field.setFont(Font.font("Times New Roman"));
@@ -270,7 +257,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //card area for player1
         Text cardText1 = new Text();
         cardText1.setLayoutX(170);
-        cardText1.setLayoutY(490);
+        cardText1.setLayoutY(480);
         cardText1.setFont(Font.font("Times New Roman", 51));
         cardText1.setFill(Color.web("#FFD000"));
         cardText1.setWrappingWidth(70);
@@ -278,7 +265,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //card area for player2
         Text cardText2 = new Text();
         cardText2.setLayoutX(289);
-        cardText2.setLayoutY(490);
+        cardText2.setLayoutY(480);
         cardText2.setFont(Font.font("Times New Roman", 51));
         cardText2.setFill(Color.web("#FFD000"));
         cardText2.setWrappingWidth(70);
@@ -286,7 +273,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //card area for player3
         Text cardText3 = new Text();
         cardText3.setLayoutX(920);
-        cardText3.setLayoutY(490);
+        cardText3.setLayoutY(480);
         cardText3.setFont(Font.font("Times New Roman", 51));
         cardText3.setFill(Color.web("#FFD000"));
         cardText3.setWrappingWidth(70);
@@ -294,7 +281,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //card area for player4
         Text cardText4 = new Text();
         cardText4.setLayoutX(1039);
-        cardText4.setLayoutY(490);
+        cardText4.setLayoutY(480);
         cardText4.setFont(Font.font("Times New Roman", 51));
         cardText4.setFill(Color.web("#FFD000"));
         cardText4.setWrappingWidth(70);
@@ -302,12 +289,13 @@ public class Client extends Application implements Runnable, BlackjackConstants
         //main card area
         mainCardArea = new Text();
         mainCardArea.setLayoutX(582);
-        mainCardArea.setLayoutY(494);
+        mainCardArea.setLayoutY(478);
         mainCardArea.setFont(Font.font("Times New Roman", 88));
         mainCardArea.setText("\uD83C\uDCA0");
         mainCardArea.setFill(Color.web("#FFD000"));
         mainCardArea.setWrappingWidth(117);
         
+        //message text
         message = new Text();
         message.setLayoutX(10);
         message.setLayoutY(700);
@@ -320,6 +308,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         dealer.setFont(Font.font("Times New Roman", 24));
         dealer.setFill(Color.WHITE);
         
+        //the dealer's hand value
         dealerHand = new Text();
         dealerHand.setLayoutX(695);
         dealerHand.setLayoutY(160);
@@ -335,11 +324,11 @@ public class Client extends Application implements Runnable, BlackjackConstants
             turnMarker[i].setVisible(false);
         }
         
-        turnMarker[2].getPoints().addAll(new Double[]{186.0, 390.0, 224.0, 390.0, 205.0, 420.0});
-        turnMarker[1].getPoints().addAll(new Double[]{306.0, 390.0, 344.0, 390.0, 325.0, 420.0});
+        turnMarker[2].getPoints().addAll(new Double[]{186.0, 360.0, 224.0, 360.0, 205.0, 390.0});
+        turnMarker[1].getPoints().addAll(new Double[]{306.0, 360.0, 344.0, 360.0, 325.0, 390.0});
         turnMarker[0].getPoints().addAll(new Double[]{620.0, 356.0, 658.0, 356.0, 639.0, 386.0});
-        turnMarker[3].getPoints().addAll(new Double[]{936.0, 390.0, 974.0, 390.0, 955.0, 420.0});
-        turnMarker[4].getPoints().addAll(new Double[]{1055.0, 390.0, 1093.0, 390.0, 1074.0, 420.0});
+        turnMarker[3].getPoints().addAll(new Double[]{936.0, 360.0, 974.0, 360.0, 955.0, 390.0});
+        turnMarker[4].getPoints().addAll(new Double[]{1055.0, 360.0, 1093.0, 360.0, 1074.0, 390.0});
         
         playerFields = new TextField[4];
         playerFields[0] = player1Field;
@@ -352,11 +341,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         cardArea[1] = cardText2;
         cardArea[2] = cardText3;
         cardArea[3] = cardText4;
-        /*
-        fieldPane.getChildren().addAll(btnStay, btnHit);
-        grid.getChildren().addAll(betLabel, creditsLabel, betField, creditsField);
-        fieldPane.getChildren().addAll(player1Field, player2Field, player3Field, player4Field, mainCardArea);
-        //fieldPane.getChildren().addAll(turnMarker[0], turnMarker[1], turnMarker[2], turnMarker[3], turnMarker[4]);*/
+        
         root.getChildren().addAll(btnStay, btnHit, betLabel, creditsLabel, betField, creditsField, 
                 player1Field, player2Field, player3Field, player4Field, mainCardArea,
                 cardArea[0], cardArea[1], cardArea[2], cardArea[3], message, dealer, dealerHand, 
@@ -380,17 +365,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
         supportedPlayer.setTimeStamp(System.currentTimeMillis());
         toServer.writeObject(supportedPlayer);
         toServer.flush();
-        
-        //System.out.println("cHit");
-        //Object play = fromServer.readObject();
-        //Player pl = (Player) play;
-        //players.set(0, pl);
-        //System.out.println("cHit2");
-        
-        //String credits = "";
-        
-        //credits += players.get(0).getCredits();
-        //creditsField.setText((credits));
     }
     
     public void cStay() throws IOException, ClassNotFoundException
@@ -419,8 +393,6 @@ public class Client extends Application implements Runnable, BlackjackConstants
             System.err.println(e);
         }
         
-        //new thread for connecting to server
-        //new Thread(this).start();
         if (socket == null)
             return false;
         return socket.isConnected();
