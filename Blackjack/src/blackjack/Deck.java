@@ -26,11 +26,7 @@ public class Deck
                 cards.add(new Card(suit[i],num[j]));
        
         shuffle();
-        /*
-        for(int i =0; i < size; i ++){
-            System.out.println(car[i].getNumber()+" of " + car[i].getSuit());
-        }
-        */
+     
     }
     
     public void shuffle()

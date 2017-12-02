@@ -350,10 +350,10 @@ class HandleSession implements Runnable, BlackjackConstants
         currentPlayerNum = (++currentPlayerNum) % players.size();
         //players.get(currentPlayerNum).setState(State.ON);
         Player play = new Player("testing");
-        play.addCredits(4499);
-        if(currentPlayerNum == players.size()){
+        play.addCredits(499);
+        if(currentPlayerNum == players.size()-1){
             for(int i = 0; i < players.size(); i++){
-                if(players.get(i).getCredits() >= 5000 && players.get(i).getCredits() > play.getCredits()){
+                if(players.get(i).getCredits() >= 500 && players.get(i).getCredits() > play.getCredits()){
                     play = players.get(i);
                     endGame = true;
                 }
@@ -361,7 +361,7 @@ class HandleSession implements Runnable, BlackjackConstants
             for(int i = 0; i < players.size(); i++){
                 if(players.get(i).getCredits() == play.getCredits())
                     players.get(i).setMessage("You Won the Game!");
-                else
+                else if(endGame == true)
                     players.get(i).setMessage("You lost!");
             }
             

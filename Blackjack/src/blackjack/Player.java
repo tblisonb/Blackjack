@@ -78,17 +78,7 @@ class Player extends Dealer implements Serializable
     {
         return name;
     }
-    /*
-    public void setPlayerNum(int num)
-    {
-        this.playerNum = num;
-    }
-    
-    public int getPlayerNum()
-    {
-        return playerNum;
-    }
-*/
+ 
     public void setMove(Move move) 
     {
         this.move = move;
