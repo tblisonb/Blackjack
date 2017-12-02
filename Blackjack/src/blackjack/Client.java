@@ -54,6 +54,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
     private List<Player> players;
     private Player supportedPlayer;
     private int turnN;
+    private boolean isThePlayerSeated = false;
     
     //Begins the UI Code
     @Override
@@ -148,6 +149,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
                 btn.fire();
         });
     }
+    
     
     public void buildGUI(Stage primaryStage)
     {
@@ -244,6 +246,14 @@ public class Client extends Application implements Runnable, BlackjackConstants
             TextField player2Field = new TextField();
         
         Button btnChair1 = new Button("Chair 1");
+        Button btnChair2 = new Button("Chair 2");
+        Button btnChair3 = new Button("Chair 3");
+        Button btnChair4 = new Button("Chair 4");
+        Button btnChair5 = new Button("Chair 5");
+        
+        
+        
+        
         btnChair1.setLayoutX(605);
         btnChair1.setLayoutY(535);
         btnChair1.setFont(Font.font("Times New Roman", 16));
@@ -251,6 +261,10 @@ public class Client extends Application implements Runnable, BlackjackConstants
         {
             //Places the selected Avatar
             root.getChildren().remove(btnChair1);
+            root.getChildren().remove(btnChair2);
+            root.getChildren().remove(btnChair3);
+            root.getChildren().remove(btnChair4);
+            root.getChildren().remove(btnChair5);
             String avatar = display("Avatar Selection Screen", "");
             Image image = new Image(avatar);
             ImageView player1 = new ImageView();
@@ -276,18 +290,23 @@ public class Client extends Application implements Runnable, BlackjackConstants
             root.getChildren().add(player1Field);
             
             playerFields[1] = player1Field;
+            
+            
                     
            });
 
         
-        Button btnChair2 = new Button("Chair 2");
         btnChair2.setLayoutX(80);
         btnChair2.setLayoutY(400);
         btnChair2.setFont(Font.font("Times New Roman", 16));
         btnChair2.setOnAction((ActionEvent event) -> 
         {
             //Places the selected Avatar
+            root.getChildren().remove(btnChair1);
             root.getChildren().remove(btnChair2);
+            root.getChildren().remove(btnChair3);
+            root.getChildren().remove(btnChair4);
+            root.getChildren().remove(btnChair5);
             String avatar = display("Avatar Selection Screen", "");
             ImageView boxPlacement2 = new ImageView();
             Image image = new Image(avatar);
@@ -316,13 +335,16 @@ public class Client extends Application implements Runnable, BlackjackConstants
             
         });
         
-        Button btnChair3 = new Button("Chair 3");
         btnChair3.setLayoutX(80);
         btnChair3.setLayoutY(190);
         btnChair3.setFont(Font.font("Times New Roman", 16));
         btnChair3.setOnAction((ActionEvent event) -> 
         {
+            root.getChildren().remove(btnChair1);
+            root.getChildren().remove(btnChair2);
             root.getChildren().remove(btnChair3);
+            root.getChildren().remove(btnChair4);
+            root.getChildren().remove(btnChair5);
             String avatar = display("Avatar Selection Screen", "");
             ImageView boxPlacement3 = new ImageView();
             Image image = new Image(avatar);
@@ -340,13 +362,16 @@ public class Client extends Application implements Runnable, BlackjackConstants
             root.getChildren().add(boxPlacement3);
         });
         
-        Button btnChair4 = new Button("Chair 4");
         btnChair4.setLayoutX(1155);
         btnChair4.setLayoutY(190);
         btnChair4.setFont(Font.font("Times New Roman", 16));
         btnChair4.setOnAction((ActionEvent event) -> 
         {
+            root.getChildren().remove(btnChair1);
+            root.getChildren().remove(btnChair2);
+            root.getChildren().remove(btnChair3);
             root.getChildren().remove(btnChair4);
+            root.getChildren().remove(btnChair5);
             String avatar = display("Avatar Selection Screen", "");
             ImageView boxPlacement4 = new ImageView();
             Image image = new Image(avatar);
@@ -364,12 +389,15 @@ public class Client extends Application implements Runnable, BlackjackConstants
             root.getChildren().add(boxPlacement4);
         });
         
-        Button btnChair5 = new Button("Chair 5");
         btnChair5.setLayoutX(1155);
         btnChair5.setLayoutY(400);
         btnChair5.setFont(Font.font("Times New Roman", 16));
         btnChair5.setOnAction((ActionEvent event) -> 
         {
+            root.getChildren().remove(btnChair1);
+            root.getChildren().remove(btnChair2);
+            root.getChildren().remove(btnChair3);
+            root.getChildren().remove(btnChair4);
             root.getChildren().remove(btnChair5);
             String avatar = display("Avatar Selection Screen", "");
             ImageView boxPlacement5 = new ImageView();
@@ -732,6 +760,7 @@ public class Client extends Application implements Runnable, BlackjackConstants
         
         return avatar;
         }
+        
     public static void main(String[] args)
     {
         launch(args);
